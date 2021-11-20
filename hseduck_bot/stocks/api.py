@@ -1,8 +1,7 @@
 import json
 from typing import Optional
 
-from hseduck_bot.storage.db.sqlite import SQLiteStorage
-from hseduck_bot.storage.stocks import StockInfo
+from hseduck_bot.model.stocks import StockInfo
 import yfinance as yf
 
 

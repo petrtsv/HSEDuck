@@ -1,12 +1,14 @@
 import datetime
 import sqlite3
 from sqlite3 import Cursor
-from typing import Dict, Any, Union, List
+from typing import Dict, Any, Union, List, Optional
 
-from hseduck_bot.storage.stocks import StockStorage, StockInfo, StockRecord
+from hseduck_bot.model.portfolios import PortfolioStorage, Portfolio
+from hseduck_bot.model.stocks import StockStorage, StockInfo, StockRecord
+from hseduck_bot.model.users import UserStorage, User
 
 
-class SQLiteStorage(StockStorage):
+class SQLiteStorage(StockStorage, UserStorage, PortfolioStorage):
     @staticmethod
     def datetime_to_int(timestamp: datetime.datetime):
         return int(timestamp.timestamp() * 1000)
@@ -28,16 +30,25 @@ class SQLiteStorage(StockStorage):
 
     def build_scheme(self):
         self.execute_query("CREATE TABLE IF NOT EXISTS stock_records ( "
-                           "ticker VARCHAR(10), "
-                           "price INTEGER, "
-                           "record_timestamp INTEGER "
+                           "ticker VARCHAR(10) NOT NULL , "
+                           "price INTEGER NOT NULL , "
+                           "record_timestamp INTEGER  NOT NULL "
                            ")")
         self.execute_query("CREATE TABLE IF NOT EXISTS stock_info ("
                            "ticker VARCHAR(10) UNIQUE ON CONFLICT REPLACE, "
-                           "stock_name VARCHAR(128), "
+                           "stock_name VARCHAR(128) NOT NULL , "
                            'description VARCHAR(16384) DEFAULT "", '
                            'json_info TEXT DEFAULT "{}"'
                            ")")
+
+        self.execute_query("CREATE TABLE IF NOT EXISTS users ("
+                           "id INTEGER NOT NULL PRIMARY KEY, "
+                           "username VARCHAR(64) NOT NULL  UNIQUE ON CONFLICT REPLACE)")
+
+        self.execute_query("CREATE TABLE IF NOT EXISTS portfolios ("
+                           "id INTEGER NOT NULL PRIMARY KEY, "
+                           "owner_id INTEGER NOT NULL, "
+                           "name VARCHAR(128) NOT NULL )")
 
     def save_stock_record(self, record: StockRecord) -> None:
         if record is None:
@@ -88,3 +99,62 @@ class SQLiteStorage(StockStorage):
         self.execute_query("SELECT * FROM stock_info")
         return [StockInfo(ticker=row[0], name=row[1], description=row[2], json_info=row[3]) for row in
                 self.cursor.fetchall()]
+
+    def create_user(self, user: User) -> None:
+        if user is None:
+            return
+        self.execute_query("INSERT INTO users (username) VALUES "
+                           "(:username)", {
+                               'username': user.username
+                           })
+        user.id = self.cursor.lastrowid
+
+    def find_user(self, user: User, create: bool = False) -> None:
+        if user is None:
+            return
+        self.execute_query("SELECT * FROM users WHERE "
+                           "username = :username", {
+                               'username': user.username
+                           })
+        row = self.cursor.fetchone()
+        if row is None and create:
+            self.create_user(user)
+        else:
+            user.id = row[0]
+
+    def get_user_by_id(self, user_id: int) -> Optional[User]:
+        self.execute_query("SELECT * FROM users WHERE "
+                           "id = :id", {
+                               'id': user_id
+                           })
+        row = self.cursor.fetchone()
+        if row is None:
+            return None
+        return User(user_id=row[0], username=row[1])
+
+    def create_portfolio(self, portfolio: Portfolio) -> None:
+        if portfolio is None:
+            return
+        self.execute_query("INSERT INTO portfolios (owner_id, name) VALUES "
+                           "(:owner_id, :name)", {
+                               'owner_id': portfolio.owner_id,
+                               'name': portfolio.name
+                           })
+        portfolio.id = self.cursor.lastrowid
+
+    def get_portfolio_by_id(self, portfolio_id: int) -> Optional[Portfolio]:
+        self.execute_query("SELECT * FROM portfolios WHERE "
+                           "id = :id", {
+                               'id': portfolio_id
+                           })
+        row = self.cursor.fetchone()
+        if row is None:
+            return None
+        return Portfolio(portfolio_id=row[0], owner_id=row[1], name=row[2])
+
+    def get_portfolios_for_user_id(self, user_id: int) -> List[Portfolio]:
+        self.execute_query("SELECT * FROM portfolios WHERE "
+                           "owner_id = :owner_id", {
+                               'owner_id': user_id
+                           })
+        return [Portfolio(portfolio_id=row[0], owner_id=row[1], name=row[2]) for row in self.cursor.fetchall()]

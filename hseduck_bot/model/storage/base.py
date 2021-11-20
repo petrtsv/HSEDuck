@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Any, Iterable
 
 
-class AbstractStorage(ABC):
+class BaseStorage(ABC):
     @abstractmethod
     def init(self) -> None:
         """

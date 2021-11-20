@@ -2,8 +2,6 @@ import datetime
 from abc import ABC, abstractmethod
 from typing import List, Union
 
-from hseduck_bot.storage.db.base import AbstractStorage
-
 
 class StockInfo:
     def __init__(self, ticker: str, name: str, description: str = "", json_info: str = "{}"):
@@ -20,7 +18,7 @@ class StockRecord:
         self.timestamp = timestamp
 
 
-class StockStorage(AbstractStorage, ABC):
+class StockStorage(ABC):
     @abstractmethod
     def save_stock_record(self, record: StockRecord) -> None:
         """
