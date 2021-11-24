@@ -19,8 +19,10 @@ class SQLiteStorage(StockStorage, UserStorage, PortfolioStorage, TransactionStor
         self.connection = None
         self.cursor: Union[Cursor, None] = None
 
-    def execute_query(self, template: str, args: Dict[str, Any] = None) -> None:
+    def execute_query(self, template: str, args: Dict[str, Any] = None, commit=True) -> None:
         self.cursor.execute(template, args) if args is not None else self.cursor.execute(template)
+        if commit:
+            self.connection.commit()
 
     def init(self):
         self.connection = sqlite3.connect(self.db_file)
@@ -180,8 +182,9 @@ class SQLiteStorage(StockStorage, UserStorage, PortfolioStorage, TransactionStor
                                    'portfolio_id': transaction.portfolio_id,
                                    'ticker': transaction.ticker,
                                    'quantity': transaction.quantity,
-                               })
+                               }, commit=False)
         self.execute_query("COMMIT TRANSACTION")
+        self.connection.commit()
 
     def get_quantity(self, portfolio_id: int, ticker: str) -> int:
         self.execute_query(
