@@ -23,3 +23,7 @@ class PortfolioStorage(ABC):
     @abstractmethod
     def get_portfolios_for_user_id(self, user_id: int) -> List[Portfolio]:
         pass
+
+    @abstractmethod
+    def get_tickers_for_portfolio(self, portfolio_id) -> List[str]:
+        pass

@@ -1,14 +1,15 @@
 import datetime
 import sqlite3
 from sqlite3 import Cursor
-from typing import Dict, Any, Union, List, Optional
+from typing import Dict, Any, Union, List, Optional, Iterable
 
 from hseduck_bot.model.portfolios import PortfolioStorage, Portfolio
 from hseduck_bot.model.stocks import StockStorage, StockInfo, StockRecord
+from hseduck_bot.model.transactions import TransactionStorage, Transaction
 from hseduck_bot.model.users import UserStorage, User
 
 
-class SQLiteStorage(StockStorage, UserStorage, PortfolioStorage):
+class SQLiteStorage(StockStorage, UserStorage, PortfolioStorage, TransactionStorage):
     @staticmethod
     def datetime_to_int(timestamp: datetime.datetime):
         return int(timestamp.timestamp() * 1000)
@@ -49,6 +50,11 @@ class SQLiteStorage(StockStorage, UserStorage, PortfolioStorage):
                            "id INTEGER NOT NULL PRIMARY KEY, "
                            "owner_id INTEGER NOT NULL, "
                            "name VARCHAR(128) NOT NULL )")
+
+        self.execute_query("CREATE TABLE IF NOT EXISTS transactions("
+                           "portfolio_id INTEGER NOT NULL, "
+                           "ticker VARCHAR(10) NOT NULL, "
+                           "quantity INTEGER NOT NULL )")
 
     def save_stock_record(self, record: StockRecord) -> None:
         if record is None:
@@ -158,3 +164,32 @@ class SQLiteStorage(StockStorage, UserStorage, PortfolioStorage):
                                'owner_id': user_id
                            })
         return [Portfolio(portfolio_id=row[0], owner_id=row[1], name=row[2]) for row in self.cursor.fetchall()]
+
+    def get_tickers_for_portfolio(self, portfolio_id: int) -> List[str]:
+        self.execute_query("SELECT ticker, SUM(quantity) as total FROM transactions WHERE portfolio_id = :portfolio_id "
+                           "GROUP BY ticker HAVING total > 0", {
+                               'portfolio_id': portfolio_id
+                           })
+        return [row[0] for row in self.cursor.fetchall()]
+
+    def add_transaction_batch(self, batch: Iterable[Transaction]):
+        self.execute_query("BEGIN TRANSACTION")
+        for transaction in batch:
+            self.execute_query("INSERT INTO transactions (portfolio_id, ticker, quantity) VALUES "
+                               "(:portfolio_id, :ticker, :quantity)", {
+                                   'portfolio_id': transaction.portfolio_id,
+                                   'ticker': transaction.ticker,
+                                   'quantity': transaction.quantity,
+                               })
+        self.execute_query("COMMIT TRANSACTION")
+
+    def get_quantity(self, portfolio_id: int, ticker: str) -> int:
+        self.execute_query(
+            "SELECT SUM(quantity) as total FROM transactions "
+            "WHERE portfolio_id = :portfolio_id AND ticker = :ticker",
+            {
+                'portfolio_id': portfolio_id,
+                'ticker': ticker
+            })
+        row = self.cursor.fetchone()
+        return row[0] if row is not None else 0
