@@ -1,7 +1,7 @@
 from typing import Optional
 
 from hseduck_bot import config
-from hseduck_bot.controller import users, stocks
+from hseduck_bot.controller import users, stocks, portfolios, transactions
 from hseduck_bot.model.storage.base import BaseStorage
 from hseduck_bot.model.storage.sqlite import SQLiteStorage
 
@@ -16,6 +16,8 @@ def load():
 
     users.initialize(storage)
     stocks.initialize(storage)
+    portfolios.initialize(storage)
+    transactions.initialize(storage)
 
 
 def unload():

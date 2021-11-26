@@ -62,7 +62,7 @@ class SQLiteStorage(StockStorage, UserStorage, PortfolioStorage, TransactionStor
         if record is None:
             return
         self.execute_query("INSERT INTO stock_records (ticker, price, record_timestamp) VALUES "
-                           "(:ticker, :price, :timestamp)", {
+                           "(:ticker, :price, :record_timestamp)", {
                                "ticker": record.ticker,
                                "price": record.price,
                                "record_timestamp": self.datetime_to_int(record.timestamp),
