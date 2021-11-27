@@ -14,6 +14,10 @@ class SQLiteStorage(StockStorage, UserStorage, PortfolioStorage, TransactionStor
     def datetime_to_int(timestamp: datetime.datetime):
         return int(timestamp.timestamp() * 1000)
 
+    @staticmethod
+    def int_to_datetime(x: int):
+        return datetime.datetime.fromtimestamp(x / 1000.)
+
     def __init__(self, db_file):
         self.db_file = db_file
         self.connection = None
@@ -25,7 +29,7 @@ class SQLiteStorage(StockStorage, UserStorage, PortfolioStorage, TransactionStor
             self.connection.commit()
 
     def init(self):
-        self.connection = sqlite3.connect(self.db_file)
+        self.connection = sqlite3.connect(self.db_file, check_same_thread=False)
         self.cursor = self.connection.cursor()
 
     def close(self) -> None:
@@ -72,18 +76,20 @@ class SQLiteStorage(StockStorage, UserStorage, PortfolioStorage, TransactionStor
             -> List[StockRecord]:
         self.execute_query("SELECT * FROM stock_records WHERE "
                            "ticker = :ticker " +
-                           ("" if from_date is None else "record_timestamp >= :from_timestamp ") +
-                           "ORDER BY record_timestamp DESC")
-        return [StockRecord(ticker=row[0], price=row[1], timestamp=datetime.datetime.fromtimestamp(row[2])) for row in
+                           ("" if from_date is None else "record_timestamp > :from_timestamp ") +
+                           "ORDER BY record_timestamp DESC",
+                           {'ticker': ticker})
+        return [StockRecord(ticker=row[0], price=row[1], timestamp=self.int_to_datetime(row[2])) for row in
                 self.cursor.fetchall()]
 
     def get_last_stock_record(self, ticker: str) -> Union[StockRecord, None]:
         self.execute_query("SELECT * FROM stock_records WHERE "
                            "ticker = :ticker "
-                           "ORDER BY record_timestamp DESC")
+                           "ORDER BY record_timestamp DESC",
+                           {'ticker': ticker})
         result = self.cursor.fetchone()
         return result if result is None else StockRecord(ticker=result[0], price=result[1],
-                                                         timestamp=datetime.datetime.fromtimestamp(result[2]))
+                                                         timestamp=self.int_to_datetime(result[2]))
 
     def save_stock_info(self, info: StockInfo) -> None:
         if info is None:

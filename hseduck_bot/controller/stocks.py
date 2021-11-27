@@ -26,5 +26,9 @@ def price(ticker: str):
     return last_record(ticker).price
 
 
+def price_str(ticker: str):
+    return last_record(ticker).price_repr
+
+
 def save_record(record: StockRecord):
     stock_storage.save_stock_record(record)

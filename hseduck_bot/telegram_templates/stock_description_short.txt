@@ -1,0 +1,3 @@
+Company: <b>$$$NAME$$$</b>
+Ticker: <code>$$$TICKER$$$</code>
+Stock price: <code>$$$PRICE$$$</code>

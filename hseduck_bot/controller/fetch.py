@@ -21,7 +21,8 @@ def fetch_stock_prices(ticker: str, start: Optional[datetime.datetime] = None):
     min_start = datetime.datetime.now() - config.MAX_FETCH_RANGE
     if start is None or start < min_start:
         start = min_start
+    start += config.INTERVAL_TIMEDELTA
     data = yf.download(ticker, start=start, end=datetime.datetime.now(),
-                       group_by="ticker", progress=False, interval=config.INTERVAL, show_errors=True)
+                       group_by="ticker", progress=False, interval=config.INTERVAL, show_errors=False)
     for row in data.iterrows():
         stocks.save_record(StockRecord(ticker, round(row[1]['Close'] * config.PRICE_PRECISION), row[0]))

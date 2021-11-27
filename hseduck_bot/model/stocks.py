@@ -2,6 +2,8 @@ import datetime
 from abc import ABC, abstractmethod
 from typing import List, Union
 
+from hseduck_bot import config
+
 
 class StockInfo:
     def __init__(self, ticker: str, name: str, description: str = "", json_info: str = "{}"):
@@ -16,6 +18,10 @@ class StockRecord:
         self.ticker = ticker
         self.price = price
         self.timestamp = timestamp
+
+    @property
+    def price_repr(self):
+        return config.PRICE_REPR % (self.price / config.PRICE_PRECISION)
 
 
 class StockStorage(ABC):
