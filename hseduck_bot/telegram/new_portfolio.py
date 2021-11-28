@@ -1,4 +1,5 @@
 import re
+import traceback
 
 from telegram import Update
 from telegram.ext import CallbackContext
@@ -34,7 +35,7 @@ def run(update: Update, context: CallbackContext):
         portfolios.create_portfolio(user.id, name)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=get_text('done'), parse_mode='HTML')
-    except Exception as e:
-        print(e)
+    except Exception:
+        print(traceback.format_exc())
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=get_text('error'), parse_mode='HTML')

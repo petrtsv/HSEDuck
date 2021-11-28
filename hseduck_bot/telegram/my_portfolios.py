@@ -1,3 +1,5 @@
+import traceback
+
 from telegram import Update
 from telegram.ext import CallbackContext
 
@@ -39,6 +41,7 @@ def run(update: Update, context: CallbackContext):
 
                 elements.append(get_text('portfolio_element', {
                     'name': stock_info.name,
+                    'ticker': stock_info.ticker,
                     'quantity': quantity,
                     'cost': money_to_str(cost)
                 }))
@@ -47,14 +50,14 @@ def run(update: Update, context: CallbackContext):
                 'name': portfolio.name,
                 'id': portfolio.id,
                 'current_cost': money_to_str(portfolio_cost),
-                'usd': money_to_str(money),
+                'usd': money,
                 'elements': '\n\n'.join(elements)
             })
 
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=message_text, parse_mode='HTML', disable_notification=True)
 
-    except Exception as e:
-        print(e)
+    except Exception:
+        print(traceback.format_exc())
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=get_text('error'), parse_mode='HTML')

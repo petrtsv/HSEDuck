@@ -1,3 +1,4 @@
-$$$NAME$$$
-Quantity: $$$QUANTITY$$$
-Total cost: $$$COST$$$
+<b>$$$NAME$$$</b>
+Ticker: <code>$$$TICKER$$$</code>
+Quantity: <code>$$$QUANTITY$$$</code>
+Total cost: <code>$$$COST$$$</code>

@@ -55,10 +55,10 @@ def run(update: Update, context: CallbackContext):
             return
 
         try:
-            transactions.buy_stock(portfolio_id, ticker, quantity)
+            transactions.sell_stock(portfolio_id, ticker, quantity)
         except NotEnoughError:
             context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=get_text('no_money'),
+                                     text=get_text('no_items'),
                                      parse_mode='HTML')
             return
 

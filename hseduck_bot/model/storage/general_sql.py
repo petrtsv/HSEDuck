@@ -104,7 +104,8 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
 
     def get_stock_info(self, ticker: str) -> Union[StockInfo, None]:
         self.execute_query("SELECT * FROM stock_info WHERE "
-                           "ticker = :ticker")
+                           "ticker = :ticker",
+                           {'ticker': ticker})
         result = self.cursor.fetchone()
         return result if result is None else StockInfo(ticker=result[0], name=result[1], description=result[2],
                                                        json_info=result[3])

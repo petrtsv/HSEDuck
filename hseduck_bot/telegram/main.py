@@ -1,10 +1,8 @@
-import asyncio
-
 from telegram.ext import Updater, Dispatcher, CommandHandler
 
 from hseduck_bot import config
 from hseduck_bot.controller.lifecycle import load, unload
-from hseduck_bot.telegram import start, stock_list, help_command, new_portfolio, my_portfolios
+from hseduck_bot.telegram import start, stock_list, help_command, new_portfolio, my_portfolios, buy, sell
 from hseduck_bot.util import async_idle
 
 
@@ -28,6 +26,12 @@ async def run_bot():
 
         my_portfolios_handler = CommandHandler('my_portfolios', my_portfolios.run)
         dispatcher.add_handler(my_portfolios_handler)
+
+        buy_handler = CommandHandler('buy', buy.run)
+        dispatcher.add_handler(buy_handler)
+
+        sell_handler = CommandHandler('sell', sell.run)
+        dispatcher.add_handler(sell_handler)
 
         updater.start_polling()
 

@@ -16,7 +16,7 @@ def save_info(info: StockInfo):
 
 
 def get_info(ticker: str):
-    stock_storage.get_stock_info(ticker)
+    return stock_storage.get_stock_info(ticker)
 
 
 def all_stocks():

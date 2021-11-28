@@ -26,3 +26,7 @@ def create_portfolio(user_id: int, name: str) -> Portfolio:
     transactions.add_stock(portfolio_id=new_portfolio.id, ticker=config.CURRENCY,
                            quantity=round(config.INITIAL_BALANCE * config.PRICE_PRECISION))
     return new_portfolio
+
+
+def get_by_id(portfolio_id: int) -> Portfolio:
+    return portfolio_storage.get_portfolio_by_id(portfolio_id)
