@@ -41,7 +41,7 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
                            "record_timestamp INTEGER  NOT NULL "
                            ")")
         self.execute_query("CREATE TABLE IF NOT EXISTS stock_info ("
-                           "ticker VARCHAR(10) UNIQUE ON CONFLICT REPLACE, "
+                           "ticker VARCHAR(10) UNIQUE, "
                            "stock_name VARCHAR(128) NOT NULL , "
                            'description VARCHAR(16384) DEFAULT "", '
                            'json_info TEXT DEFAULT "{}"'
@@ -49,7 +49,7 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
 
         self.execute_query("CREATE TABLE IF NOT EXISTS users ("
                            "id INTEGER NOT NULL PRIMARY KEY, "
-                           "username VARCHAR(64) NOT NULL  UNIQUE ON CONFLICT REPLACE)")
+                           "username VARCHAR(64) NOT NULL UNIQUE)")
 
         self.execute_query("CREATE TABLE IF NOT EXISTS portfolios ("
                            "id INTEGER NOT NULL PRIMARY KEY, "
@@ -94,7 +94,8 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
         if info is None:
             return
         self.execute_query("INSERT INTO stock_info (ticker, stock_name, description, json_info) VALUES "
-                           "(:ticker, :stock_name, :description, :json_info)", {
+                           "(:ticker, :stock_name, :description, :json_info) "
+                           "ON CONFLICT (ticker) DO UPDATE SET ticker = EXCLUDED.dname", {
                                "ticker": info.ticker,
                                "stock_name": info.name,
                                "description": info.description,
@@ -117,7 +118,7 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
         if user is None:
             return
         self.execute_query("INSERT INTO users (username) VALUES "
-                           "(:username)", {
+                           "(:username) ON CONFLICT (username) DO NOTHING", {
                                'username': user.username
                            })
         user.id = self.cursor.lastrowid

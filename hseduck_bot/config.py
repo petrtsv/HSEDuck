@@ -16,6 +16,7 @@ if DEBUG:
     TICKERS_FILE = os.path.join(BASE_DIR, "data", "tickers_tiny.csv")
 else:
     TICKERS_FILE = os.path.join(BASE_DIR, "data", "tickers_medium.csv")
+
 TG_TEMPLATES_FOLDER = os.path.join(BASE_DIR, "telegram_templates")
 TG_TOKEN = os.environ['HSEDUCK_TG_TOKEN']
 INTERVAL = '1h'
