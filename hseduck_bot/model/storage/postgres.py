@@ -18,7 +18,7 @@ class PostgresStorage(AbstractSQLStorage):
 
     def execute_query(self, template: str, args: Dict[str, Any] = None, commit=True) -> None:
         print(template)
-        template = re.sub(self.SQLITE_TO_POSTGRES_REGEX, '\1', template)
+        template = re.sub(self.SQLITE_TO_POSTGRES_REGEX, r'%(\1)s', template)
         print(template)
         self.cursor.execute(template, args) if args is not None else self.cursor.execute(template)
         if commit:
