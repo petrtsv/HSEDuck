@@ -28,3 +28,30 @@ class PostgresStorage(AbstractSQLStorage):
 
     def close(self) -> None:
         self.connection.close()
+
+    def build_scheme(self):
+        self.execute_query("CREATE TABLE IF NOT EXISTS stock_records ( "
+                           "ticker VARCHAR(10) NOT NULL , "
+                           "price BIGINT NOT NULL , "
+                           "record_timestamp BIGINT  NOT NULL "
+                           ")")
+        self.execute_query("CREATE TABLE IF NOT EXISTS stock_info ("
+                           "ticker VARCHAR(10) UNIQUE, "
+                           "stock_name VARCHAR(128) NOT NULL , "
+                           "description VARCHAR(16384) DEFAULT '', "
+                           "json_info TEXT DEFAULT '{}'"
+                           ")")
+
+        self.execute_query("CREATE TABLE IF NOT EXISTS users ("
+                           "id SERIAL PRIMARY KEY, "
+                           "username VARCHAR(64) NOT NULL UNIQUE)")
+
+        self.execute_query("CREATE TABLE IF NOT EXISTS portfolios ("
+                           "id SERIAL PRIMARY KEY, "
+                           "owner_id BIGINT NOT NULL, "
+                           "name VARCHAR(128) NOT NULL )")
+
+        self.execute_query("CREATE TABLE IF NOT EXISTS transactions("
+                           "portfolio_id BIGINT NOT NULL, "
+                           "ticker VARCHAR(10) NOT NULL, "
+                           "quantity BIGINT NOT NULL )")
