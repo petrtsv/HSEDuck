@@ -95,7 +95,7 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
             return
         self.execute_query("INSERT INTO stock_info (ticker, stock_name, description, json_info) VALUES "
                            "(:ticker, :stock_name, :description, :json_info) "
-                           "ON CONFLICT (ticker) DO UPDATE SET ticker = EXCLUDED.dname", {
+                           "ON CONFLICT (ticker) DO UPDATE SET ticker = EXCLUDED.ticker", {
                                "ticker": info.ticker,
                                "stock_name": info.name,
                                "description": info.description,

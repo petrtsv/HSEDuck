@@ -1,3 +1,4 @@
+import re
 from typing import Dict, Any, Optional
 
 import psycopg2
@@ -13,7 +14,12 @@ class PostgresStorage(AbstractSQLStorage):
         self.connection = None
         self.cursor: Optional[cursor] = None
 
+    SQLITE_TO_POSTGRES_REGEX = re.compile(r':(\w+)\b')
+
     def execute_query(self, template: str, args: Dict[str, Any] = None, commit=True) -> None:
+        print(template)
+        template = re.sub(self.SQLITE_TO_POSTGRES_REGEX, '\1', template)
+        print(template)
         self.cursor.execute(template, args) if args is not None else self.cursor.execute(template)
         if commit:
             self.connection.commit()

@@ -23,3 +23,4 @@ class SQLiteStorage(AbstractSQLStorage):
 
     def close(self) -> None:
         self.connection.close()
+
