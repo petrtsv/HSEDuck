@@ -15,6 +15,7 @@ updater: Optional[Periodic] = None
 
 async def load():
     print("Loading storage...")
+    print("Using DB: %s" % config.DB_TYPE)
     global storage
     if config.DB_TYPE == 'sqlite':
         storage = SQLiteStorage(config.CONNECTION_STRING)
