@@ -1,0 +1,3 @@
+$$$NAME$$$
+Quantity: $$$QUANTITY$$$
+Total cost: $$$COST$$$

@@ -21,7 +21,11 @@ class StockRecord:
 
     @property
     def price_repr(self):
-        return config.PRICE_REPR % (self.price / config.PRICE_PRECISION)
+        return config.PRICE_REPR % self.price_float
+
+    @property
+    def price_float(self):
+        return self.price / config.PRICE_PRECISION
 
 
 class StockStorage(ABC):

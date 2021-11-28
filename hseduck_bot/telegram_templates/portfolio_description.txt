@@ -1,0 +1,9 @@
+<b>$$$NAME$$$</b>
+ID: <code>$$$ID$$$</code>
+
+Current cost: <code>$$$CURRENT_COST$$$</code>
+
+USD: <code>$$$USD$$$</code>
+
+Stocks:
+$$$ELEMENTS$$$

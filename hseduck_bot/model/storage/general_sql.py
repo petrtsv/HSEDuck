@@ -48,11 +48,11 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
                            ")")
 
         self.execute_query("CREATE TABLE IF NOT EXISTS users ("
-                           "id BIGINT NOT NULL PRIMARY KEY, "
+                           "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                            "username VARCHAR(64) NOT NULL UNIQUE)")
 
         self.execute_query("CREATE TABLE IF NOT EXISTS portfolios ("
-                           "id BIGINT NOT NULL PRIMARY KEY, "
+                           "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                            "owner_id BIGINT NOT NULL, "
                            "name VARCHAR(128) NOT NULL )")
 
@@ -131,8 +131,9 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
                                'username': user.username
                            })
         row = self.cursor.fetchone()
-        if row is None and create:
-            self.create_user(user)
+        if row is None:
+            if create:
+                self.create_user(user)
         else:
             user.id = row[0]
 

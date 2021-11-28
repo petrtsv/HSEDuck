@@ -1,3 +1,4 @@
+import math
 from typing import Optional
 
 from hseduck_bot.model.stocks import StockStorage, StockInfo, StockRecord
@@ -14,6 +15,10 @@ def save_info(info: StockInfo):
     stock_storage.save_stock_info(info)
 
 
+def get_info(ticker: str):
+    stock_storage.get_stock_info(ticker)
+
+
 def all_stocks():
     return stock_storage.get_stocks()
 
@@ -22,13 +27,18 @@ def last_record(ticker: str):
     return stock_storage.get_last_stock_record(ticker)
 
 
-def price(ticker: str):
+def price_int(ticker: str):
     return last_record(ticker).price
 
 
 def price_str(ticker: str):
     record = last_record(ticker)
     return record.price_repr if record is not None else "NONE"
+
+
+def price_float(ticker: str):
+    record = last_record(ticker)
+    return record.price_float if record is not None else math.nan
 
 
 def save_record(record: StockRecord):

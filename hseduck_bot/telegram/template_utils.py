@@ -5,7 +5,8 @@ from hseduck_bot import config
 
 
 def get_text(template_name: str, template_args: Optional[Dict[str, Any]] = None):
-    with open(os.path.join(config.TG_TEMPLATES_FOLDER, template_name + ".txt"), 'r') as f:
+    template_path = os.path.join(*template_name.split(".")) + ".txt"
+    with open(os.path.join(config.TG_TEMPLATES_FOLDER, template_path), 'r') as f:
         template_text = f.read()
     if template_args is not None:
         for k in template_args:
