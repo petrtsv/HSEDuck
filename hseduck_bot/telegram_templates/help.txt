@@ -4,8 +4,8 @@
 
 /my_portfolios — prints list of all your portfolios
 
-/new_portfolio — creates a new portfolio <i>with initial balance of $10'000</i>
+/new_portfolio <code>NAME</code> — creates a new portfolio <i>with initial balance of $10'000</i>
 
-/buy <code>TICKER</code> — buys some stock for one of your portfolios
+/buy <code>TICKER</code> <code>QUANTITY</code> — buys some stock for one of your portfolios
 
-/sell <code>TICKER</code> — sells some stock from one of your portfolios
+/sell <code>TICKER</code> <code>QUANTITY</code> — sells some stock from one of your portfolios
