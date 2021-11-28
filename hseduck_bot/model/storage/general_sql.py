@@ -43,8 +43,8 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
         self.execute_query("CREATE TABLE IF NOT EXISTS stock_info ("
                            "ticker VARCHAR(10) UNIQUE, "
                            "stock_name VARCHAR(128) NOT NULL , "
-                           'description VARCHAR(16384) DEFAULT "", '
-                           'json_info TEXT DEFAULT "{}"'
+                           "description VARCHAR(16384) DEFAULT '', "
+                           "json_info TEXT DEFAULT '{}'"
                            ")")
 
         self.execute_query("CREATE TABLE IF NOT EXISTS users ("
