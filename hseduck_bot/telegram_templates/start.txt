@@ -1,9 +1,5 @@
-Привет!
+Hi!
 
-Этот бот — симулятор биржи. Здесь можно собрать виртуальный портфель из акций топ-50 компаний из S&P 500.
+Using this bot you can collect a virtual investment portfolio. Top 50 stocks from S&P 500 are available.
 
-Для начала, создайте один или несколько <i>инвестиционных портфелей</i>: /new_portfolio.
-
-Изначально на балансе портфеля лежит 1000$. Вы можете продавать/покупать акции по тикеру.
-
-Список доступных акций: /stock_list.
+To list all the commands use: /help

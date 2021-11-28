@@ -4,7 +4,7 @@ from telegram.ext import Updater, Dispatcher, CommandHandler
 
 from hseduck_bot import config
 from hseduck_bot.controller.lifecycle import load, unload
-from hseduck_bot.telegram import start, stock_list
+from hseduck_bot.telegram import start, stock_list, help_command
 from hseduck_bot.util import async_idle
 
 
@@ -16,6 +16,9 @@ async def run_bot():
 
         start_handler = CommandHandler('start', start.run)
         dispatcher.add_handler(start_handler)
+
+        help_handler = CommandHandler('help', help_command.run)
+        dispatcher.add_handler(help_handler)
 
         all_stocks_handler = CommandHandler('stock_list', stock_list.run)
         dispatcher.add_handler(all_stocks_handler)

@@ -1,0 +1,11 @@
+/help — prints this message
+
+/stock_list — prints <i>all</i> available stocks
+
+/my_portfolios — prints list of all your portfolios
+
+/new_portfolio — creates a new portfolio <i>with initial balance of $10'000</i>
+
+/buy <code>TICKER</code> — buys some stock for one of your portfolios
+
+/sell <code>TICKER</code> — sells some stock from one of your portfolios

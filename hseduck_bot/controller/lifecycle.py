@@ -5,6 +5,7 @@ from typing import Optional
 from hseduck_bot import config
 from hseduck_bot.controller import users, stocks, portfolios, transactions, fetch
 from hseduck_bot.model.storage.base import BaseStorage
+from hseduck_bot.model.storage.postgres import PostgresStorage
 from hseduck_bot.model.storage.sqlite import SQLiteStorage
 from hseduck_bot.util import Periodic
 
@@ -15,7 +16,11 @@ updater: Optional[Periodic] = None
 async def load():
     print("Loading storage...")
     global storage
-    storage = SQLiteStorage(config.SQLITE_FILE)
+    if config.DB_TYPE == 'sqlite':
+        storage = SQLiteStorage(config.CONNECTION_STRING)
+    else:
+        storage = PostgresStorage(config.CONNECTION_STRING)
+
     storage.init()
     storage.build_scheme()
 

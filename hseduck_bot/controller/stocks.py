@@ -27,7 +27,8 @@ def price(ticker: str):
 
 
 def price_str(ticker: str):
-    return last_record(ticker).price_repr
+    record = last_record(ticker)
+    return record.price_repr if record is not None else "NONE"
 
 
 def save_record(record: StockRecord):
