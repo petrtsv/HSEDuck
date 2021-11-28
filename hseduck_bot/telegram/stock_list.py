@@ -18,7 +18,7 @@ def run(update: Update, context: CallbackContext):
             'price': stocks.price_str(stock.ticker)
         }
         cur_info = get_text('stock_description_short', template_args)
-        if cur_ln + len(cur_info):
+        if cur_ln + len(cur_info) > MESSAGE_LEN_LIMIT:
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text="\n\n".join(stock_info_strings),
                                      parse_mode='HTML',
