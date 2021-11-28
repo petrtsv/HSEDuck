@@ -37,8 +37,8 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
     def build_scheme(self):
         self.execute_query("CREATE TABLE IF NOT EXISTS stock_records ( "
                            "ticker VARCHAR(10) NOT NULL , "
-                           "price INTEGER NOT NULL , "
-                           "record_timestamp INTEGER  NOT NULL "
+                           "price BIGINT NOT NULL , "
+                           "record_timestamp BIGINT  NOT NULL "
                            ")")
         self.execute_query("CREATE TABLE IF NOT EXISTS stock_info ("
                            "ticker VARCHAR(10) UNIQUE, "
@@ -48,18 +48,18 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
                            ")")
 
         self.execute_query("CREATE TABLE IF NOT EXISTS users ("
-                           "id INTEGER NOT NULL PRIMARY KEY, "
+                           "id BIGINT NOT NULL PRIMARY KEY, "
                            "username VARCHAR(64) NOT NULL UNIQUE)")
 
         self.execute_query("CREATE TABLE IF NOT EXISTS portfolios ("
-                           "id INTEGER NOT NULL PRIMARY KEY, "
-                           "owner_id INTEGER NOT NULL, "
+                           "id BIGINT NOT NULL PRIMARY KEY, "
+                           "owner_id BIGINT NOT NULL, "
                            "name VARCHAR(128) NOT NULL )")
 
         self.execute_query("CREATE TABLE IF NOT EXISTS transactions("
-                           "portfolio_id INTEGER NOT NULL, "
+                           "portfolio_id BIGINT NOT NULL, "
                            "ticker VARCHAR(10) NOT NULL, "
-                           "quantity INTEGER NOT NULL )")
+                           "quantity BIGINT NOT NULL )")
 
     def save_stock_record(self, record: StockRecord) -> None:
         if record is None:
