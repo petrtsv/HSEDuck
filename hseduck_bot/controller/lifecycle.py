@@ -1,4 +1,5 @@
 import asyncio
+import traceback
 from asyncio import Task
 from typing import Optional
 
@@ -44,9 +45,9 @@ def update():
             last_record = stocks.last_record(stock.ticker)
             last_timestamp = None if last_record is None else last_record.timestamp
             fetch.fetch_stock_prices(stock.ticker, start=last_timestamp)
-    except Exception as e:
+    except Exception:
         print("Exception while updating!")
-        print(e)
+        print(traceback.format_exc())
 
 
 async def start_update():
