@@ -176,11 +176,13 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
         return [Portfolio(portfolio_id=row[0], owner_id=row[1], name=row[2]) for row in self.cursor.fetchall()]
 
     def get_tickers_for_portfolio(self, portfolio_id: int) -> List[str]:
-        self.execute_query("SELECT ticker, SUM(quantity) as total FROM transactions WHERE portfolio_id = :portfolio_id "
-                           "GROUP BY ticker HAVING SUM(quantity) > 0", {
-                               'portfolio_id': portfolio_id
-                           })
-        return [row[0] for row in self.cursor.fetchall()]
+        self.execute_query(
+            "SELECT ticker, SUM(quantity), portfolio_id FROM transactions WHERE portfolio_id = :portfolio_id "
+            "GROUP BY ticker HAVING SUM(quantity) > 0", {
+                'portfolio_id': portfolio_id
+            })
+        res = [row[0] for row in self.cursor.fetchall()]
+        return res
 
     def add_transaction_batch(self, batch: Iterable[Transaction]):
         self.execute_query("BEGIN TRANSACTION", commit=False)
@@ -203,7 +205,6 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
                 'ticker': ticker
             })
         row = self.cursor.fetchone()
-        print(portfolio_id, ticker, row)
         if row is None:
             return 0
 
