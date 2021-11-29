@@ -16,7 +16,7 @@ class StockInfo:
 class StockRecord:
     def __init__(self, ticker: str, price: int, timestamp: datetime.datetime):
         self.ticker = ticker
-        self.price = price
+        self.price = int(price)
         self.timestamp = timestamp
 
     @property

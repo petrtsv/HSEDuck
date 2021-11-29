@@ -6,8 +6,8 @@ from hseduck_bot.model.users import User
 
 class Portfolio:
     def __init__(self, name: str, owner_id: int, portfolio_id: int = None):
-        self.id = portfolio_id
-        self.owner_id = owner_id
+        self.id = int(portfolio_id)
+        self.owner_id = int(owner_id)
         self.name = name
 
 

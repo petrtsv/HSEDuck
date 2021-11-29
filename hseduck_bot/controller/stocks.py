@@ -28,7 +28,7 @@ def last_record(ticker: str):
 
 
 def price_int(ticker: str):
-    return last_record(ticker).price
+    return int(last_record(ticker).price)
 
 
 def price_str(ticker: str):
@@ -38,7 +38,7 @@ def price_str(ticker: str):
 
 def price_float(ticker: str):
     record = last_record(ticker)
-    return record.price_float if record is not None else math.nan
+    return float(record.price_float if record is not None else math.nan)
 
 
 def save_record(record: StockRecord):

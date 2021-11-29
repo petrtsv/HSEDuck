@@ -4,8 +4,8 @@ from typing import Optional, Iterable
 
 class Transaction:
     def __init__(self, portfolio_id: int, quantity: int, ticker: str):
-        self.portfolio_id = portfolio_id
-        self.quantity = quantity
+        self.portfolio_id = int(portfolio_id)
+        self.quantity = int(quantity)
         self.ticker = ticker
 
 

@@ -13,7 +13,7 @@ def initialize(storage: TransactionStorage):
 
 
 def quantity_in_portfolio(portfolio_id: int, ticker: str):
-    return transaction_storage.get_quantity(portfolio_id, ticker)
+    return int(transaction_storage.get_quantity(portfolio_id, ticker))
 
 
 class NotEnoughError(Exception):
