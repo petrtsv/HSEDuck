@@ -49,5 +49,6 @@ Configuration is stored in `config.py`
 
 ## TODOs
 1. Add short-selling
-2. Show price change during lat day, week etc
-3. Add portfolio deletion
+2. Add competitions
+3. Show price change during lat day, week etc
+4. Add portfolio deletion
