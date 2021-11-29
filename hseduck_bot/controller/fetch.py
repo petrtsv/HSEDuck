@@ -26,5 +26,5 @@ def fetch_stock_prices(ticker: str, start: Optional[datetime.datetime] = None):
     data = yf.download(ticker, start=start, end=datetime.datetime.now(),
                        group_by="ticker", progress=False, interval=config.INTERVAL, show_errors=False)
     for row in data.iterrows():
-        if math.isnan(row[1]['Close']):
+        if not math.isnan(row[1]['Close']):
             stocks.save_record(StockRecord(ticker, round(row[1]['Close'] * config.PRICE_PRECISION), row[0]))
