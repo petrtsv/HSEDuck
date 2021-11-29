@@ -62,7 +62,7 @@ class PostgresStorage(AbstractSQLStorage):
 
     def get_tickers_for_portfolio(self, portfolio_id: int) -> List[str]:
         self.execute_query("SELECT ticker, SUM(quantity) FROM transactions WHERE portfolio_id = :portfolio_id "
-                           "GROUP BY ticker HAVING quantity > 0", {
+                           "GROUP BY ticker HAVING SUM(quantity) > 0", {
                                'portfolio_id': portfolio_id
                            })
         return [row[0] for row in self.cursor.fetchall()]
