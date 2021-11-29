@@ -6,7 +6,7 @@ from hseduck_bot.model.users import User
 
 class Portfolio:
     def __init__(self, name: str, owner_id: int, portfolio_id: int = None):
-        self.id = int(portfolio_id)
+        self.id = int(portfolio_id) if portfolio_id is not None else None
         self.owner_id = int(owner_id)
         self.name = name
 

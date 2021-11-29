@@ -4,7 +4,7 @@ from typing import Optional
 
 class User:
     def __init__(self, username: str, user_id: int = None):
-        self.id = int(user_id)
+        self.id = int(user_id) if user_id is not None else None
         self.username = username
 
 
