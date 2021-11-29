@@ -119,10 +119,11 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
         if user is None:
             return
         self.execute_query("INSERT INTO users (username) VALUES "
-                           "(:username) ON CONFLICT (username) DO NOTHING", {
+                           "(:username) ON CONFLICT (username) DO NOTHING RETURNING id", {
                                'username': user.username
                            })
-        user.id = self.cursor.lastrowid
+        row = self.cursor.fetchone()
+        user.id = row[0]
 
     def find_user(self, user: User, create: bool = False) -> None:
         if user is None:
@@ -152,11 +153,12 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
         if portfolio is None:
             return
         self.execute_query("INSERT INTO portfolios (owner_id, name) VALUES "
-                           "(:owner_id, :name)", {
+                           "(:owner_id, :name) RETURNING id", {
                                'owner_id': portfolio.owner_id,
                                'name': portfolio.name
                            })
-        portfolio.id = self.cursor.lastrowid
+        row = self.cursor.fetchone()
+        portfolio.id = row[0]
 
     def get_portfolio_by_id(self, portfolio_id: int) -> Optional[Portfolio]:
         self.execute_query("SELECT * FROM portfolios WHERE "
@@ -182,6 +184,7 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
                 'portfolio_id': portfolio_id
             })
         res = [row[0] for row in self.cursor.fetchall()]
+        print(portfolio_id, res)
         return res
 
     def add_transaction_batch(self, batch: Iterable[Transaction]):
@@ -205,6 +208,7 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
                 'ticker': ticker
             })
         row = self.cursor.fetchone()
+        print(row)
         if row is None:
             return 0
 
