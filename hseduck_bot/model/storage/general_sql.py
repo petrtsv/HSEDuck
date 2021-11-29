@@ -178,7 +178,7 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
     def get_tickers_for_portfolio(self, portfolio_id: int) -> List[str]:
         self.execute_query(
             "SELECT ticker, SUM(quantity), portfolio_id FROM transactions WHERE portfolio_id = :portfolio_id "
-            "GROUP BY ticker HAVING SUM(quantity) > 0", {
+            "GROUP BY ticker, portfolio_id HAVING SUM(quantity) > 0", {
                 'portfolio_id': portfolio_id
             })
         res = [row[0] for row in self.cursor.fetchall()]
