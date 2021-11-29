@@ -38,6 +38,12 @@ def run(update: Update, context: CallbackContext):
                                  parse_mode='HTML')
         return
 
+    if quantity <= 0:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=get_text('input_validation.invalid_arguments', {'arguments': 'QUANTITY'}),
+                                 parse_mode='HTML')
+        return
+
     try:
         ticker_info = stocks.get_info(ticker)
         if ticker_info is None:
