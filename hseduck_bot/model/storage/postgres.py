@@ -65,4 +65,6 @@ class PostgresStorage(AbstractSQLStorage):
                            "GROUP BY ticker HAVING SUM(quantity) > 0", {
                                'portfolio_id': portfolio_id
                            })
-        return [row[0] for row in self.cursor.fetchall()]
+        res = [row[0] for row in self.cursor.fetchall()]
+        print(res)
+        return res

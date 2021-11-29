@@ -203,6 +203,7 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
                 'ticker': ticker
             })
         row = self.cursor.fetchone()
+        print(row)
         if row is None:
             return 0
 
