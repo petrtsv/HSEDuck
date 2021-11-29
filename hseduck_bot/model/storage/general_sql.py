@@ -184,7 +184,6 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
                 'portfolio_id': portfolio_id
             })
         res = [row[0] for row in self.cursor.fetchall()]
-        print(portfolio_id, res)
         return res
 
     def add_transaction_batch(self, batch: Iterable[Transaction]):
@@ -202,13 +201,12 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
     def get_quantity(self, portfolio_id: int, ticker: str) -> int:
         self.execute_query(
             "SELECT SUM(quantity), portfolio_id, ticker FROM transactions "
-            "WHERE portfolio_id = :portfolio_id AND ticker = :ticker",
+            "WHERE portfolio_id = :portfolio_id AND ticker = :ticker GROUP BY portfolio_id, ticker",
             {
                 'portfolio_id': portfolio_id,
                 'ticker': ticker
             })
         row = self.cursor.fetchone()
-        print(row)
         if row is None:
             return 0
 
