@@ -183,7 +183,7 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
         return [row[0] for row in self.cursor.fetchall()]
 
     def add_transaction_batch(self, batch: Iterable[Transaction]):
-        self.execute_query("BEGIN TRANSACTION")
+        self.execute_query("BEGIN TRANSACTION", commit=False)
         for transaction in batch:
             self.execute_query("INSERT INTO transactions (portfolio_id, ticker, quantity) VALUES "
                                "(:portfolio_id, :ticker, :quantity)", {
@@ -191,7 +191,7 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
                                    'ticker': transaction.ticker,
                                    'quantity': transaction.quantity,
                                }, commit=False)
-        self.execute_query("COMMIT TRANSACTION")
+        self.execute_query("COMMIT TRANSACTION", commit=False)
         self.connection.commit()
 
     def get_quantity(self, portfolio_id: int, ticker: str) -> int:
@@ -203,4 +203,5 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
                 'ticker': ticker
             })
         row = self.cursor.fetchone()
+        print(row)
         return row[0] if row is not None else 0
