@@ -1,5 +1,5 @@
 import re
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional
 
 import psycopg2
 from psycopg2._psycopg import cursor, connection
@@ -53,11 +53,22 @@ class PostgresStorage(AbstractSQLStorage):
         self.execute_query("CREATE TABLE IF NOT EXISTS portfolios ("
                            "id SERIAL PRIMARY KEY, "
                            "owner_id BIGINT NOT NULL, "
-                           "name VARCHAR(128) NOT NULL )")
+                           "name VARCHAR(128) NOT NULL,"
+                           "contest_id BIGINT )")
 
         self.execute_query("CREATE TABLE IF NOT EXISTS transactions("
                            "portfolio_id BIGINT NOT NULL, "
                            "ticker VARCHAR(10) NOT NULL, "
                            "quantity BIGINT NOT NULL )")
 
+        self.execute_query("CREATE TABLE IF NOT EXISTS contests( "
+                           "id SERIAL PRIMARY KEY, "
+                           "owner_id BIGINT NOT NULL, "
+                           "name VARCHAR(128) NOT NULL, "
+                           "start_timestamp BIGINT NOT NULL, "
+                           "end_timestamp BIGINT NOT NULL, "
+                           "status INTEGER NOT NULL)")
 
+        self.execute_query("CREATE TABLE IF NOT EXISTS participations( "
+                           "user_id BIGINT NOT NULL, "
+                           "contest_id BIGINT NOT NULL)")

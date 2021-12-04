@@ -1,6 +1,7 @@
 import datetime
 import math
 from typing import Optional
+
 import yfinance as yf
 
 from hseduck_bot import config

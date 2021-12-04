@@ -1,0 +1,5 @@
+<b>$$$NAME$$$</b>
+Status: <i>$$$STATUS$$$</i>
+Deadline: <code>$$$DEADLINE$$$</code>
+
+$$$RESULTS$$$

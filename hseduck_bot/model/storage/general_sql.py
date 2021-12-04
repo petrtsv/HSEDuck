@@ -2,6 +2,8 @@ import datetime
 from abc import ABC, abstractmethod
 from typing import Dict, Any, List, Optional, Union, Iterable
 
+from hseduck_bot.model import contests
+from hseduck_bot.model.contests import ContestStorage, Contest
 from hseduck_bot.model.portfolios import PortfolioStorage, Portfolio
 from hseduck_bot.model.stocks import StockStorage, StockRecord, StockInfo
 from hseduck_bot.model.storage.base import BaseStorage
@@ -9,7 +11,8 @@ from hseduck_bot.model.transactions import TransactionStorage, Transaction
 from hseduck_bot.model.users import UserStorage, User
 
 
-class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorage, TransactionStorage, ABC):
+class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorage, TransactionStorage, ContestStorage,
+                         ABC):
     @staticmethod
     def datetime_to_int(timestamp: datetime.datetime):
         return int(timestamp.timestamp() * 1000)
@@ -54,12 +57,25 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
         self.execute_query("CREATE TABLE IF NOT EXISTS portfolios ("
                            "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                            "owner_id BIGINT NOT NULL, "
-                           "name VARCHAR(128) NOT NULL )")
+                           "name VARCHAR(128) NOT NULL, "
+                           "contest_id BIGINT)")
 
         self.execute_query("CREATE TABLE IF NOT EXISTS transactions("
                            "portfolio_id BIGINT NOT NULL, "
                            "ticker VARCHAR(10) NOT NULL, "
                            "quantity BIGINT NOT NULL )")
+
+        self.execute_query("CREATE TABLE IF NOT EXISTS contests( "
+                           "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                           "owner_id BIGINT NOT NULL, "
+                           "name VARCHAR(128) NOT NULL, "
+                           "start_timestamp BIGINT NOT NULL, "
+                           "end_timestamp BIGINT NOT NULL, "
+                           "status INTEGER NOT NULL)")
+
+        self.execute_query("CREATE TABLE IF NOT EXISTS participations( "
+                           "user_id BIGINT NOT NULL, "
+                           "contest_id BIGINT NOT NULL)")
 
     def save_stock_record(self, record: StockRecord) -> None:
         if record is None:
@@ -152,10 +168,11 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
     def create_portfolio(self, portfolio: Portfolio) -> None:
         if portfolio is None:
             return
-        self.execute_query("INSERT INTO portfolios (owner_id, name) VALUES "
-                           "(:owner_id, :name) RETURNING id", {
+        self.execute_query("INSERT INTO portfolios (owner_id, name, contest_id) VALUES "
+                           "(:owner_id, :name, :contest_id) RETURNING id", {
                                'owner_id': portfolio.owner_id,
-                               'name': portfolio.name
+                               'name': portfolio.name,
+                               'contest_id': portfolio.contest_id
                            })
         row = self.cursor.fetchone()
         portfolio.id = row[0]
@@ -168,14 +185,14 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
         row = self.cursor.fetchone()
         if row is None:
             return None
-        return Portfolio(portfolio_id=row[0], owner_id=row[1], name=row[2])
+        return Portfolio(portfolio_id=row[0], owner_id=row[1], name=row[2], contest_id=row[3])
 
     def get_portfolios_for_user_id(self, user_id: int) -> List[Portfolio]:
         self.execute_query("SELECT * FROM portfolios WHERE "
                            "owner_id = :owner_id", {
                                'owner_id': user_id
                            })
-        return [Portfolio(portfolio_id=row[0], owner_id=row[1], name=row[2]) for row in self.cursor.fetchall()]
+        return [Portfolio(portfolio_id=row[0], owner_id=row[1], name=row[2], contest_id=row[3]) for row in self.cursor.fetchall()]
 
     def get_tickers_for_portfolio(self, portfolio_id: int) -> List[str]:
         self.execute_query(
@@ -211,3 +228,92 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
             return 0
 
         return row[0] if row[0] is not None else 0
+
+    def new_contest(self, contest: Contest) -> None:
+        if contest is None:
+            return
+        self.execute_query("INSERT INTO contests (owner_id, name, start_timestamp, end_timestamp, status) VALUES "
+                           "(:owner_id, :name, :start_timestamp, :end_timestamp, :status) RETURNING id", {
+                               'owner_id': contest.owner_id,
+                               'name': contest.name,
+                               'start_timestamp': self.datetime_to_int(contest.start_date),
+                               'end_timestamp': self.datetime_to_int(contest.end_date),
+                               'status': contest.status
+                           })
+        row = self.cursor.fetchone()
+        contest.id = row[0]
+
+    def get_participants_by_contest_id(self, contest_id: int) -> List[User]:
+        self.execute_query("SELECT * FROM participations WHERE "
+                           "contest_id = :contest_id",
+                           {'contest_id': contest_id})
+        return [self.get_user_by_id(row[0]) for row in
+                self.cursor.fetchall()]
+
+    def get_contests_for_user_id(self, user_id: int) -> List[Contest]:
+        self.execute_query("SELECT * FROM participations WHERE "
+                           "user_id = :user_id",
+                           {'user_id': user_id})
+        return [self.get_contest_by_id(row[1]) for row in
+                self.cursor.fetchall()]
+
+    def join_contest(self, user_id: int, contest_id: int) -> None:
+        self.execute_query("INSERT INTO participations (user_id, contest_id) VALUES"
+                           "(:user_id, :contest_id)", {
+                               'user_id': user_id,
+                               'contest_id': contest_id
+                           })
+
+    def is_participant(self, user_id: int, contest_id: int) -> bool:
+        self.execute_query("SELECT * FROM participations WHERE "
+                           "user_id = :user_id "
+                           "AND contest_id = :contest_id",
+                           {
+                               'user_id': user_id,
+                               'contest_id': contest_id
+                           })
+        return self.cursor.fetchone() is not None
+
+    def update_all_contests(self, timestamp: datetime.datetime) -> None:
+        int_timestamp = self.datetime_to_int(timestamp)
+        self.execute_query("UPDATE contests SET status = :new_status "
+                           "WHERE start_timestamp > :current_timestamp",
+                           {
+                               "new_status": contests.STATUS_BEFORE,
+                               'current_timestamp': int_timestamp
+                           })
+
+        self.execute_query("UPDATE contests SET status = :new_status "
+                           "WHERE start_timestamp <= :current_timestamp AND "
+                           "end_timestamp >= :current_timestamp",
+                           {
+                               "new_status": contests.STATUS_RUNNING,
+                               'current_timestamp': int_timestamp
+                           })
+
+        self.execute_query("UPDATE contests SET status = :new_status "
+                           "WHERE end_timestamp < :current_timestamp ",
+                           {
+                               "new_status": contests.STATUS_FINISHED,
+                               'current_timestamp': int_timestamp
+                           })
+
+    def get_contest_by_id(self, contest_id) -> Optional[Contest]:
+        self.execute_query("SELECT * FROM contests WHERE "
+                           "id = :id", {
+                               'id': contest_id
+                           })
+        row = self.cursor.fetchone()
+        if row is None:
+            return None
+        return Contest(contest_id=row[0], owner_id=row[1], name=row[2], start_date=self.int_to_datetime(row[3]),
+                       end_date=self.int_to_datetime(row[4]), status=row[5])
+
+    def get_contest_portfolio_for_user_id(self, user_id: int, contest_id: int) -> Optional[Portfolio]:
+        self.execute_query("SELECT * FROM portfolios WHERE "
+                           "owner_id = :owner_id AND contest_id = :contest_id", {
+                               'owner_id': user_id,
+                               'contest_id': contest_id
+                           })
+        row = self.cursor.fetchone()
+        return row if row is None else Portfolio(portfolio_id=row[0], owner_id=row[1], name=row[2], contest_id=row[3])

@@ -1,0 +1,9 @@
+help - /help — prints help message
+stock_list - /stock_list — prints all available stocks
+my_portfolios - /my_portfolios — prints list of all your portfolios
+new_portfolio - /new_portfolio NAME — creates a new portfolio with initial balance of $10'000
+buy - /buy PORTFOLIO_ID TICKER QUANTITY — buys some stock for one of your portfolios
+sell - /sell PORTFOLIO_ID TICKER QUANTITY — sells some stock from one of your portfolios
+new_contest - /new_contest NAME HOURS — create a new contest with given name (one word only allowed) that lasts for specified number of hours
+my_contests - /my_contests — prints list of all the contests you have joined
+join_contest - /join_contest CONTEST_ID — join contest with specified id

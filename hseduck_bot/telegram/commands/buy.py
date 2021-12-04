@@ -4,10 +4,9 @@ from telegram import Update
 from telegram.ext import CallbackContext
 
 from hseduck_bot.controller import portfolios, users, stocks, transactions
+from hseduck_bot.controller.contests import InvalidContestStateError
 from hseduck_bot.controller.transactions import NotEnoughError
 from hseduck_bot.telegram.template_utils import get_text
-
-MAX_NAME_LENGTH = 100
 
 
 def run(update: Update, context: CallbackContext):
@@ -65,6 +64,13 @@ def run(update: Update, context: CallbackContext):
         except NotEnoughError:
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=get_text('no_money'),
+                                     parse_mode='HTML')
+            return
+        except InvalidContestStateError as e:
+            context.bot.send_message(chat_id=update.effective_chat.id,
+                                     text=get_text('input_validation.contest_is_not_running', {
+                                         'name': e.contest.name,
+                                     }),
                                      parse_mode='HTML')
             return
 

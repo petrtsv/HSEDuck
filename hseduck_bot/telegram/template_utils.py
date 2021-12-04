@@ -12,3 +12,7 @@ def get_text(template_name: str, template_args: Optional[Dict[str, Any]] = None)
         for k in template_args:
             template_text = template_text.replace("$$$%s$$$" % k.upper(), str(template_args[k]))
     return template_text
+
+
+def make_bold(text: str):
+    return get_text("bold", {'text': text})

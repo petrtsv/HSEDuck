@@ -20,8 +20,8 @@ def get_tickers_for_portfolio(portfolio_id: int):
     return portfolio_storage.get_tickers_for_portfolio(portfolio_id)
 
 
-def create_portfolio(user_id: int, name: str) -> Portfolio:
-    new_portfolio = Portfolio(name=name, owner_id=user_id)
+def create_portfolio(user_id: int, name: str, contest_id: Optional[int] = None) -> Portfolio:
+    new_portfolio = Portfolio(name=name, owner_id=user_id, contest_id=contest_id)
     portfolio_storage.create_portfolio(new_portfolio)
     transactions.add_stock(portfolio_id=new_portfolio.id, ticker=config.CURRENCY,
                            quantity=round(config.INITIAL_BALANCE * config.PRICE_PRECISION))

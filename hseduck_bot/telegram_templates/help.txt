@@ -9,3 +9,9 @@
 /buy <code>PORTFOLIO_ID</code> <code>TICKER</code> <code>QUANTITY</code> — buys some stock for one of your portfolios
 
 /sell <code>PORTFOLIO_ID</code> <code>TICKER</code> <code>QUANTITY</code> — sells some stock from one of your portfolios
+
+/new_contest <code>NAME</code> <code>HOURS</code> — create a new contest with given name (one word only allowed) that lasts for specified number of hours
+
+/my_contests — prints list of all the contests you have joined
+
+/join_contest <code>CONTEST_ID</code> — join contest with specified id

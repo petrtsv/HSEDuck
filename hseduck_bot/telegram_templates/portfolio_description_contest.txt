@@ -1,0 +1,13 @@
+Portfolio for contest <b>$$$CONTEST_NAME$$$</b>
+CONTEST_ID: <code>$$$CONTEST_ID$$$</code>
+PORTFOLIO_ID: <code>$$$PORTFOLIO_ID$$$</code>
+
+Contest status: <i>$$$CONTEST_STATUS$$$</i>
+
+Current cost: <code>$$$CURRENT_COST$$$</code>
+Your current place: <code>$$$PLACE$$$</code>
+
+USD: <code>$$$USD$$$</code>
+
+Stocks:
+$$$ELEMENTS$$$

@@ -1,8 +1,9 @@
 import json
 from typing import Optional
 
-from hseduck_bot.model.stocks import StockInfo
 import yfinance as yf
+
+from hseduck_bot.model.stocks import StockInfo
 
 
 def get_info_by_ticker(ticker_str: str) -> Optional[StockInfo]:
