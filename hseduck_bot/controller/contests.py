@@ -49,7 +49,7 @@ def get_contest_results(contest_id: int) -> List[Tuple[float, User, Portfolio]]:
     participants_results = [transactions.portfolio_total_cost(portfolio.id) for portfolio in
                             participants_portfolios]
     results = list(zip(participants_results, participants, participants_portfolios))
-    results.sort(key=lambda e: (e[0], e[1].username))
+    results.sort(key=lambda e: (e[0], e[1].username), reverse=True)
     return results
 
 
