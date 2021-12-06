@@ -72,7 +72,7 @@ def update() -> None:
 
 
 def create_global_competition() -> None:
-    need_to_create = users.check_existence(config.GLOBAL_CONTEST_OWNER_USERNAME)
+    need_to_create = not users.check_existence(config.GLOBAL_CONTEST_OWNER_USERNAME)
     if need_to_create:
         user = users.login(config.GLOBAL_CONTEST_OWNER_USERNAME)
         start_date = datetime.datetime.now()

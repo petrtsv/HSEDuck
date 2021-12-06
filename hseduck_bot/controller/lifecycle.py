@@ -33,6 +33,8 @@ async def load():
     contests.initialize(storage)
     print("Storage loaded")
 
+    contests.create_global_competition()
+
     print("Load stocks from list...")
     fetch.fetch_stocks_info()
     print("Loaded")
