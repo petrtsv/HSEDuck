@@ -2,7 +2,7 @@ import datetime
 from typing import Optional, List, Tuple
 
 from hseduck_bot import config
-from hseduck_bot.controller import transactions, portfolios
+from hseduck_bot.controller import transactions, portfolios, users
 from hseduck_bot.model import contests as contests_model
 from hseduck_bot.model.contests import ContestStorage, Contest
 from hseduck_bot.model.portfolios import Portfolio
@@ -16,11 +16,13 @@ def initialize(storage: ContestStorage):
     contest_storage = storage
 
 
-def create_contest(user_id: int, name: str, start_date: datetime.datetime, end_date: datetime.datetime) -> Contest:
+def create_contest(user_id: int, name: str, start_date: datetime.datetime, end_date: datetime.datetime,
+                   must_join: bool = True) -> Contest:
     new_contest = Contest(name=name, owner_id=user_id, start_date=start_date, end_date=end_date,
                           status=contests_model.STATUS_BEFORE)
     contest_storage.new_contest(new_contest)
-    join_contest(user_id, new_contest.id)
+    if must_join:
+        join_contest(user_id, new_contest.id)
     return new_contest
 
 
@@ -64,8 +66,22 @@ def get_contest_result_by_user_id(contest_id: int, user_id: int) -> Optional[Tup
 def is_participant(user_id: int, contest_id: int) -> bool:
     return contest_storage.is_participant(contest_id=contest_id, user_id=user_id)
 
+
 def update() -> None:
     contest_storage.update_all_contests(datetime.datetime.now())
+
+
+def create_global_competition() -> None:
+    need_to_create = users.check_existence(config.GLOBAL_CONTEST_OWNER_USERNAME)
+    if need_to_create:
+        user = users.login(config.GLOBAL_CONTEST_OWNER_USERNAME)
+        start_date = datetime.datetime.now()
+        end_date = datetime.datetime.now() + config.GLOBAL_COMPETITION_DURATION
+        global_contest = create_contest(user.id, start_date=start_date, end_date=end_date,
+                                        name=config.GLOBAL_COMPETITION_NAME,
+                                        must_join=False)
+        print("Created global contest: name = %s, id = %d, end_date = %s" % (
+            global_contest.name, global_contest.id, str(global_contest.end_date)))
 
 
 class InvalidContestStateError(Exception):

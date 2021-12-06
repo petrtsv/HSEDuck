@@ -15,3 +15,8 @@ def login(username: str) -> User:
     user_storage.find_user(user, create=True)
     return user
 
+
+def check_existence(username: str) -> bool:
+    user = User(username)
+    user_storage.find_user(user, create=False)
+    return user.id is not None
