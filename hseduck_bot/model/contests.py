@@ -42,6 +42,10 @@ class ContestStorage(ABC):
         pass
 
     @abstractmethod
+    def get_owned_contests_for_user_id(self, user_id: int) -> List[Contest]:
+        pass
+
+    @abstractmethod
     def join_contest(self, user_id: int, contest_id: int) -> None:
         pass
 

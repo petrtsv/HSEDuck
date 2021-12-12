@@ -192,7 +192,8 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
                            "owner_id = :owner_id", {
                                'owner_id': user_id
                            })
-        return [Portfolio(portfolio_id=row[0], owner_id=row[1], name=row[2], contest_id=row[3]) for row in self.cursor.fetchall()]
+        return [Portfolio(portfolio_id=row[0], owner_id=row[1], name=row[2], contest_id=row[3]) for row in
+                self.cursor.fetchall()]
 
     def get_tickers_for_portfolio(self, portfolio_id: int) -> List[str]:
         self.execute_query(
@@ -256,6 +257,16 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
                            {'user_id': user_id})
         return [self.get_contest_by_id(row[1]) for row in
                 self.cursor.fetchall()]
+
+    def get_owned_contests_for_user_id(self, user_id: int) -> List[Contest]:
+        self.execute_query("SELECT * FROM contests WHERE "
+                           "owner_id = :owner_id", {
+                               'owner_id': user_id
+                           })
+        rows = self.cursor.fetchall()
+
+        return [Contest(contest_id=row[0], owner_id=row[1], name=row[2], start_date=self.int_to_datetime(row[3]),
+                        end_date=self.int_to_datetime(row[4]), status=row[5]) for row in rows]
 
     def join_contest(self, user_id: int, contest_id: int) -> None:
         self.execute_query("INSERT INTO participations (user_id, contest_id) VALUES"

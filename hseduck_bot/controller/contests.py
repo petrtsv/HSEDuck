@@ -34,6 +34,10 @@ def list_contests_for_user_id(user_id: int) -> List[Contest]:
     return contest_storage.get_contests_for_user_id(user_id)
 
 
+def list_owned_contests_for_user_id(user_id: int) -> List[Contest]:
+    return contest_storage.get_owned_contests_for_user_id(user_id)
+
+
 def join_contest(user_id: int, contest_id: int) -> None:
     contest = get_by_id(contest_id)
     if contest is None:
@@ -42,6 +46,21 @@ def join_contest(user_id: int, contest_id: int) -> None:
         raise InvalidContestStateError(contest)
     contest_storage.join_contest(user_id, contest.id)
     portfolios.create_portfolio(user_id, contest.name, contest_id=contest.id)
+
+
+def get_global_contest_id() -> int:
+    if not users.check_existence(config.GLOBAL_CONTEST_OWNER_USERNAME):
+        raise ValueError('Cannot find GLOBAL contest')
+    global_contest_owner = users.login(config.GLOBAL_CONTEST_OWNER_USERNAME)
+    global_contest_owner_contests = list_owned_contests_for_user_id(global_contest_owner.id)
+    if len(global_contest_owner_contests) < 1:
+        raise ValueError('Cannot find GLOBAL contest')
+    global_contest = global_contest_owner_contests[0]
+    return global_contest.id
+
+
+def join_global(user_id: int) -> None:
+    join_contest(user_id, global_contest.id)
 
 
 def get_contest_results(contest_id: int) -> List[Tuple[float, User, Portfolio]]:
