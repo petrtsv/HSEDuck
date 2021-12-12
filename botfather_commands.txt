@@ -6,4 +6,4 @@ buy - /buy PORTFOLIO_ID TICKER QUANTITY — buys some stock for one of your port
 sell - /sell PORTFOLIO_ID TICKER QUANTITY — sells some stock from one of your portfolios
 new_contest - /new_contest NAME HOURS — create a new contest with given name (one word only allowed) that lasts for specified number of hours
 my_contests - /my_contests — prints list of all the contests you have joined
-join_contest - /join_contest CONTEST_ID — join contest with specified id
+join_contest - /join_contest CONTEST_ID — join contest with specified id (or to global contest if replace CONTEST_ID with "global")

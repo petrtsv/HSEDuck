@@ -7,7 +7,7 @@ from hseduck_bot.controller import users, contests
 from hseduck_bot.telegram.template_utils import get_text
 from hseduck_bot.telegram.views.contest_view import contest_view
 
-GLOBAL_CONTEST_ALIAS = 'GLOBAL'
+GLOBAL_CONTEST_ALIAS = 'global'
 
 
 def run(update: Update, context: CallbackContext):
@@ -22,9 +22,8 @@ def run(update: Update, context: CallbackContext):
 
     try:
         contest_arg = args[1]
-        if contest_arg == GLOBAL_CONTEST_ALIAS:
+        if str(contest_arg).lower() == GLOBAL_CONTEST_ALIAS.lower():
             contest_id: int = contests.get_global_contest_id()
-            print(contest_id)
         else:
             contest_id: int = int(contest_arg)
     except ValueError:

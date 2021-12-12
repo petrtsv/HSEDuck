@@ -61,6 +61,8 @@ given amount of hours
 
 `/join CONTEST_ID` — join the contest with given id
 
+`/join global` — join an eternal global competition is
+
 ## Manual deployment
 
 To deploy the application on your own you have to:
