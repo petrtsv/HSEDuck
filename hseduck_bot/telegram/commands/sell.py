@@ -61,9 +61,12 @@ def run(update: Update, context: CallbackContext):
 
         try:
             transactions.sell_stock(portfolio_id, ticker, quantity)
-        except NotEnoughError:
+        except NotEnoughError as e:
             context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=get_text('no_items'),
+                                     text=get_text('no_items', {
+                                         'have': e.have,
+                                         'need': e.need
+                                     }),
                                      parse_mode='HTML')
             return
         except InvalidContestStateError as e:

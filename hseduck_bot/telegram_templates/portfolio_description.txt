@@ -2,6 +2,8 @@
 PORTFOLIO_ID: <code>$$$ID$$$</code>
 
 Current cost: <code>$$$CURRENT_COST$$$</code>
+Not covered shorts: <code>$$$NOT_COVERED$$$</code>
+Difference: <code>$$$DIFFERENCE$$$</code>
 
 USD: <code>$$$USD$$$</code>
 

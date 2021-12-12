@@ -3,9 +3,11 @@ import traceback
 from telegram import Update
 from telegram.ext import CallbackContext
 
+from hseduck_bot import config
 from hseduck_bot.controller import portfolios, users, stocks, transactions
 from hseduck_bot.controller.contests import InvalidContestStateError
 from hseduck_bot.controller.transactions import NotEnoughError
+from hseduck_bot.telegram.commands.utils import money_to_str
 from hseduck_bot.telegram.template_utils import get_text, wrong_format_message
 
 
@@ -61,9 +63,13 @@ def run(update: Update, context: CallbackContext):
 
         try:
             transactions.buy_stock(portfolio_id, ticker, quantity)
-        except NotEnoughError:
+        except NotEnoughError as e:
             context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=get_text('no_money'),
+                                     text=get_text('no_money',
+                                                   {
+                                                       'have': money_to_str(e.have / config.PRICE_PRECISION),
+                                                       'need': money_to_str(e.need / config.PRICE_PRECISION)
+                                                   }),
                                      parse_mode='HTML')
             return
         except InvalidContestStateError as e:

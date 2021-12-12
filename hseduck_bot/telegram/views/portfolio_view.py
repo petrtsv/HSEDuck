@@ -40,7 +40,7 @@ def portfolio_view(portfolio: Portfolio, user_id: Optional[int] = None):
 
     short_elements = []
     for short in short_transactions.get_current_shorts(portfolio.id):
-        cost = short.quantity * stocks.price_float(short.ticker, timestamp=timestamp)
+        cost = short.quantity * stocks.price_float(short.ticker)
         info = stocks.get_info(short.ticker)
         short_elements.append(get_text('portfolio_short_element', {
             'name': info.name,
@@ -49,12 +49,14 @@ def portfolio_view(portfolio: Portfolio, user_id: Optional[int] = None):
             'cost': money_to_str(cost),
             'date': short.timestamp.strftime("%Y-%m-%d %H:%M:%S %Z%z")
         }))
-
+    not_covered_cost = short_transactions.shorts_cost_in_portfolio(portfolio.id)
     if portfolio.contest_id is None:
         portfolio_text = get_text('portfolio_description', {
             'name': portfolio.name,
             'id': portfolio.id,
             'current_cost': money_to_str(portfolio_cost),
+            'not_covered': money_to_str(not_covered_cost),
+            'difference': money_to_str(portfolio_cost - not_covered_cost),
             'usd': money,
             'elements': '\n\n'.join(elements),
             'shorts': '\n\n'.join(short_elements)
@@ -70,6 +72,8 @@ def portfolio_view(portfolio: Portfolio, user_id: Optional[int] = None):
             'contest_status': status_view(contest.status),
             'portfolio_id': portfolio.id,
             'current_cost': money_to_str(result[1]),
+            'not_covered': money_to_str(not_covered_cost),
+            'difference': money_to_str(result[1] - not_covered_cost),
             'place': result[0] + 1,
             'usd': money,
             'elements': '\n\n'.join(elements),

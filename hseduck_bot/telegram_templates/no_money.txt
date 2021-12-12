@@ -1,1 +1,4 @@
-Not enough money to buy requested amount.
+<i>Not enough money to buy requested amount.</i>
+
+You have: <code>$$$HAVE$$$</code>
+You need: <code>$$$NEED$$$</code>

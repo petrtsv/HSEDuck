@@ -5,7 +5,9 @@ from telegram.ext import CallbackContext
 
 from hseduck_bot.controller import portfolios, users, stocks, transactions, short_transactions
 from hseduck_bot.controller.contests import InvalidContestStateError
+from hseduck_bot.controller.short_transactions import ShortsLimitExceeded
 from hseduck_bot.controller.transactions import NotEnoughError
+from hseduck_bot.telegram.commands.utils import money_to_str
 from hseduck_bot.telegram.template_utils import get_text, wrong_format_message
 
 
@@ -55,6 +57,14 @@ def run(update: Update, context: CallbackContext):
 
         try:
             short_transactions.short_stock(portfolio_id, ticker, quantity)
+        except ShortsLimitExceeded as e:
+            context.bot.send_message(chat_id=update.effective_chat.id,
+                                     text=get_text('short_limit_exceeded', {
+                                         'limit': money_to_str(e.limit),
+                                         'try': money_to_str(e.try_to_get)
+                                     }),
+                                     parse_mode='HTML')
+            return
         except InvalidContestStateError as e:
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=get_text('input_validation.contest_is_not_running', {

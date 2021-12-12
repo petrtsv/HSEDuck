@@ -1,0 +1,4 @@
+<i>You cannot have opened short positions with total cost exceeding the limit.</i>
+
+Opened shorts after operation: <code>$$$TRY$$$</code>
+Limit: <code>$$$LIMIT$$$</code>

@@ -63,6 +63,23 @@ given amount of hours
 
 `/join global` — join an eternal global competition
 
+_NOTE: actual results will be displayed only after all short positions will be automatically covered (maximum 24 hours after the end of the contest)._ 
+
+### Short-selling
+
+This bot also supports _short-selling_. You can borrow some stocks from the virtual broker for 24 hours. Stocks are
+immediately sold and money is transferred to the portfolio. After deadline, stocks are automatically taken from the
+portfolio (and purchased, if the amount is not enough to cover the short position).
+
+_After deadline, you can get negative amount of money on your portfolio._
+
+There's a limitation on short-selling: you cannot borrow stocks if total cost of not covered short position
+exceeds `$10'000` after the requested operation.
+
+Command to open a short position works similar to buy/sell commands:
+
+`/short PORTFOLIO_ID TICKER QUANTITY`
+
 ## Manual deployment
 
 To deploy the application on your own you have to:
@@ -75,10 +92,3 @@ To deploy the application on your own you have to:
 3. Run `python entrypoint.py`
 
 Configuration is stored in `config.py`
-
-## TODOs
-
-1. Add short-selling
-2. ~~Add competitions~~ Done!
-3. Show price change during lat day, week etc
-4. Add portfolio deletion

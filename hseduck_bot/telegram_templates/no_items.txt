@@ -1,1 +1,4 @@
-Not enough items to sell requested amount.
+<i>Not enough items to sell requested amount.</i>
+
+You have: <code>$$$HAVE$$$</code>
+You need: <code>$$$NEED$$$</code>

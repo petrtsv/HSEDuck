@@ -38,3 +38,4 @@ if DEBUG:
     SHORT_DURATION = datetime.timedelta(minutes=5)
 else:
     SHORT_DURATION = datetime.timedelta(hours=24)
+SHORT_MAX_NOT_COVERED = 10000
