@@ -52,11 +52,11 @@ def check_portfolio_state(portfolio_id: int):
             raise InvalidContestStateError(contest)
 
 
-def buy_stock(portfolio_id: int, ticker: str, quantity: int):
+def buy_stock(portfolio_id: int, ticker: str, quantity: int, ignore_amount: bool = False):
     check_portfolio_state(portfolio_id)
     current_money = quantity_in_portfolio(portfolio_id, config.CURRENCY)
     current_price = price_int(ticker) * quantity
-    if current_money >= current_price:
+    if ignore_amount or current_money >= current_price:
         transaction_storage.add_transaction_batch((
             Transaction(portfolio_id=portfolio_id, ticker=config.CURRENCY, quantity=-current_price),
             Transaction(portfolio_id=portfolio_id, ticker=ticker, quantity=quantity)
@@ -65,11 +65,11 @@ def buy_stock(portfolio_id: int, ticker: str, quantity: int):
         raise NotEnoughError(config.CURRENCY, current_money, current_price)
 
 
-def sell_stock(portfolio_id: int, ticker: str, quantity: int):
+def sell_stock(portfolio_id: int, ticker: str, quantity: int, ignore_amount: bool = False):
     check_portfolio_state(portfolio_id)
     current_quantity = quantity_in_portfolio(portfolio_id, ticker)
     current_price = price_int(ticker) * quantity
-    if current_quantity >= quantity:
+    if ignore_amount or current_quantity >= quantity:
         transaction_storage.add_transaction_batch((
             Transaction(portfolio_id=portfolio_id, ticker=ticker, quantity=-quantity),
             Transaction(portfolio_id=portfolio_id, ticker=config.CURRENCY, quantity=current_price)

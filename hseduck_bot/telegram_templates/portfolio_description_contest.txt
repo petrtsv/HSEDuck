@@ -11,3 +11,6 @@ USD: <code>$$$USD$$$</code>
 
 Stocks:
 $$$ELEMENTS$$$
+
+Shorts:
+$$$SHORTS$$$

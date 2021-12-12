@@ -3,7 +3,7 @@ import traceback
 from telegram import Update
 from telegram.ext import CallbackContext
 
-from hseduck_bot.controller import portfolios, users, stocks, transactions
+from hseduck_bot.controller import portfolios, users, stocks, transactions, short_transactions
 from hseduck_bot.controller.contests import InvalidContestStateError
 from hseduck_bot.controller.transactions import NotEnoughError
 from hseduck_bot.telegram.template_utils import get_text, wrong_format_message
@@ -15,7 +15,7 @@ def run(update: Update, context: CallbackContext):
 
     if len(args) != 4:
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=wrong_format_message("sell"),
+                                 text=wrong_format_message("short"),
                                  parse_mode='HTML')
         return
 
@@ -23,7 +23,7 @@ def run(update: Update, context: CallbackContext):
         portfolio_id: int = int(args[1])
     except ValueError:
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=wrong_format_message("sell"),
+                                 text=get_text('input_validation.invalid_arguments', {'arguments': 'PORTFOLIO_ID'}),
                                  parse_mode='HTML')
         return
 
@@ -32,12 +32,6 @@ def run(update: Update, context: CallbackContext):
     try:
         quantity: int = int(args[3])
     except ValueError:
-        context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=get_text('input_validation.invalid_arguments', {'arguments': 'QUANTITY'}),
-                                 parse_mode='HTML')
-        return
-
-    if quantity <= 0:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=get_text('input_validation.invalid_arguments', {'arguments': 'QUANTITY'}),
                                  parse_mode='HTML')
@@ -60,12 +54,7 @@ def run(update: Update, context: CallbackContext):
             return
 
         try:
-            transactions.sell_stock(portfolio_id, ticker, quantity)
-        except NotEnoughError:
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=get_text('no_items'),
-                                     parse_mode='HTML')
-            return
+            short_transactions.short_stock(portfolio_id, ticker, quantity)
         except InvalidContestStateError as e:
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=get_text('input_validation.contest_is_not_running', {

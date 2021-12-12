@@ -3,10 +3,7 @@ import traceback
 from telegram import Update
 from telegram.ext import CallbackContext
 
-from hseduck_bot import config
-from hseduck_bot.controller import users, portfolios, stocks, transactions
-from hseduck_bot.model.stocks import StockInfo
-from hseduck_bot.telegram.commands.utils import money_to_str
+from hseduck_bot.controller import users, portfolios
 from hseduck_bot.telegram.template_utils import get_text
 from hseduck_bot.telegram.views.portfolio_view import portfolio_view
 

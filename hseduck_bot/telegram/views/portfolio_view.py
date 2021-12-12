@@ -1,8 +1,7 @@
-import datetime
 from typing import Optional
 
 from hseduck_bot import config
-from hseduck_bot.controller import portfolios, transactions, stocks, contests
+from hseduck_bot.controller import portfolios, transactions, stocks, contests, short_transactions
 from hseduck_bot.model.contests import Contest
 from hseduck_bot.model.portfolios import Portfolio
 from hseduck_bot.model.stocks import StockInfo
@@ -38,13 +37,27 @@ def portfolio_view(portfolio: Portfolio, user_id: Optional[int] = None):
             'quantity': quantity,
             'cost': money_to_str(cost)
         }))
+
+    short_elements = []
+    for short in short_transactions.get_current_shorts(portfolio.id):
+        cost = short.quantity * stocks.price_float(short.ticker, timestamp=timestamp)
+        info = stocks.get_info(short.ticker)
+        short_elements.append(get_text('portfolio_short_element', {
+            'name': info.name,
+            'ticker': short.ticker,
+            'quantity': short.quantity,
+            'cost': money_to_str(cost),
+            'date': short.timestamp.strftime("%Y-%m-%d %H:%M:%S %Z%z")
+        }))
+
     if portfolio.contest_id is None:
         portfolio_text = get_text('portfolio_description', {
             'name': portfolio.name,
             'id': portfolio.id,
             'current_cost': money_to_str(portfolio_cost),
             'usd': money,
-            'elements': '\n\n'.join(elements)
+            'elements': '\n\n'.join(elements),
+            'shorts': '\n\n'.join(short_elements)
         })
     else:
         if user_id is None:
@@ -59,7 +72,8 @@ def portfolio_view(portfolio: Portfolio, user_id: Optional[int] = None):
             'current_cost': money_to_str(result[1]),
             'place': result[0] + 1,
             'usd': money,
-            'elements': '\n\n'.join(elements)
+            'elements': '\n\n'.join(elements),
+            'shorts': '\n\n'.join(short_elements)
         })
 
     return portfolio_text

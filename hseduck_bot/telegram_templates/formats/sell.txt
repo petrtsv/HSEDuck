@@ -1,0 +1,3 @@
+<code>/sell PORTFOLIO_ID TICKER QUANTITY</code>
+Example:
+<code>/sell 1 AAPL 10</code>

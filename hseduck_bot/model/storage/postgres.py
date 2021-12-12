@@ -72,3 +72,10 @@ class PostgresStorage(AbstractSQLStorage):
         self.execute_query("CREATE TABLE IF NOT EXISTS participations( "
                            "user_id BIGINT NOT NULL, "
                            "contest_id BIGINT NOT NULL)")
+
+        self.execute_query("CREATE TABLE IF NOT EXISTS short_transactions( "
+                           "id SERIAL PRIMARY KEY, "
+                           "portfolio_id BIGINT NOT NULL, "
+                           "ticker VARCHAR(10) NOT NULL, "
+                           "quantity BIGINT NOT NULL,"
+                           "timestamp BIGINT NOT NULL)")

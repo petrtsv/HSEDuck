@@ -1,0 +1,3 @@
+<code>/new_portfolio NAME (can be several words) </code>
+Example:
+<code>/new_portfolio My First Portfolio</code>

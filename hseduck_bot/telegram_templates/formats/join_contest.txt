@@ -1,0 +1,3 @@
+<code>/join_contest CONTEST_ID</code>
+Example:
+<code>/join_contest 3</code>

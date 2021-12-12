@@ -32,3 +32,9 @@ UPDATE_DB_INTERVAL = 30 * 1
 GLOBAL_CONTEST_OWNER_USERNAME = "@@@GLOBAL_CONTEST_OWNER@@@"
 GLOBAL_COMPETITION_DURATION = datetime.timedelta(days=366 * 1000)
 GLOBAL_COMPETITION_NAME = "GLOBAL"
+GLOBAL_CONTEST_ALIAS = "global"
+
+if DEBUG:
+    SHORT_DURATION = datetime.timedelta(minutes=5)
+else:
+    SHORT_DURATION = datetime.timedelta(hours=24)

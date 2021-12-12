@@ -6,7 +6,7 @@ from telegram.ext import CallbackContext
 from hseduck_bot.controller import portfolios, users, stocks, transactions
 from hseduck_bot.controller.contests import InvalidContestStateError
 from hseduck_bot.controller.transactions import NotEnoughError
-from hseduck_bot.telegram.template_utils import get_text
+from hseduck_bot.telegram.template_utils import get_text, wrong_format_message
 
 
 def run(update: Update, context: CallbackContext):
@@ -15,7 +15,7 @@ def run(update: Update, context: CallbackContext):
 
     if len(args) != 4:
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=get_text('input_validation.missing_arguments', {'arguments': 'some'}),
+                                 text=wrong_format_message("buy"),
                                  parse_mode='HTML')
         return
 
@@ -23,7 +23,7 @@ def run(update: Update, context: CallbackContext):
         portfolio_id: int = int(args[1])
     except ValueError:
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=get_text('input_validation.invalid_arguments', {'arguments': 'PORTFOLIO_ID'}),
+                                 text=wrong_format_message("buy"),
                                  parse_mode='HTML')
         return
 
@@ -33,7 +33,7 @@ def run(update: Update, context: CallbackContext):
         quantity: int = int(args[3])
     except ValueError:
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=get_text('input_validation.invalid_arguments', {'arguments': 'QUANTITY'}),
+                                 text=wrong_format_message("buy"),
                                  parse_mode='HTML')
         return
 

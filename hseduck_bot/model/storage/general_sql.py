@@ -5,6 +5,7 @@ from typing import Dict, Any, List, Optional, Union, Iterable
 from hseduck_bot.model import contests
 from hseduck_bot.model.contests import ContestStorage, Contest
 from hseduck_bot.model.portfolios import PortfolioStorage, Portfolio
+from hseduck_bot.model.short_transactions import ShortTransactionStorage, ShortTransaction
 from hseduck_bot.model.stocks import StockStorage, StockRecord, StockInfo
 from hseduck_bot.model.storage.base import BaseStorage
 from hseduck_bot.model.transactions import TransactionStorage, Transaction
@@ -12,7 +13,9 @@ from hseduck_bot.model.users import UserStorage, User
 
 
 class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorage, TransactionStorage, ContestStorage,
+                         ShortTransactionStorage,
                          ABC):
+
     @staticmethod
     def datetime_to_int(timestamp: datetime.datetime):
         return int(timestamp.timestamp() * 1000)
@@ -76,6 +79,13 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
         self.execute_query("CREATE TABLE IF NOT EXISTS participations( "
                            "user_id BIGINT NOT NULL, "
                            "contest_id BIGINT NOT NULL)")
+
+        self.execute_query("CREATE TABLE IF NOT EXISTS short_transactions( "
+                           "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                           "portfolio_id BIGINT NOT NULL, "
+                           "ticker VARCHAR(10) NOT NULL, "
+                           "quantity BIGINT NOT NULL,"
+                           "timestamp BIGINT NOT NULL)")
 
     def save_stock_record(self, record: StockRecord) -> None:
         if record is None:
@@ -335,3 +345,54 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
                            })
         row = self.cursor.fetchone()
         return row if row is None else Portfolio(portfolio_id=row[0], owner_id=row[1], name=row[2], contest_id=row[3])
+
+    def add_short_transaction_batch(self, batch: Iterable[ShortTransaction]) -> None:
+        self.execute_query("BEGIN TRANSACTION", commit=False)
+        for transaction in batch:
+            self.execute_query(
+                "INSERT INTO short_transactions (portfolio_id, ticker, quantity, timestamp) VALUES "
+                "(:portfolio_id, :ticker, :quantity, :timestamp)", {
+                    'portfolio_id': transaction.portfolio_id,
+                    'ticker': transaction.ticker,
+                    'quantity': transaction.quantity,
+                    'timestamp': self.datetime_to_int(transaction.timestamp),
+                }, commit=False)
+        self.execute_query("COMMIT TRANSACTION")
+        self.connection.commit()
+
+    def get_ready_short_transactions(self, timestamp: Optional[datetime.datetime] = None) -> List[ShortTransaction]:
+        if timestamp is None:
+            timestamp = datetime.datetime.now()
+        self.execute_query("SELECT * FROM short_transactions WHERE "
+                           "timestamp <= :timestamp",
+                           {'timestamp': self.datetime_to_int(timestamp)})
+        return [
+            ShortTransaction(
+                transaction_id=int(row[0]),
+                portfolio_id=int(row[1]),
+                ticker=str(row[2]),
+                quantity=int(row[3]),
+                timestamp=self.int_to_datetime(int(row[4]))
+            )
+            for row in self.cursor.fetchall()]
+
+    def remove_short_transaction(self, transaction_id: int) -> None:
+        self.execute_query("DELETE FROM short_transactions WHERE id = :id", {'id': transaction_id})
+
+    def get_current_shorts(self, portfolio_id: int) -> List[ShortTransaction]:
+        self.execute_query(
+            "SELECT * FROM short_transactions "
+            "WHERE portfolio_id = :portfolio_id",
+            {
+                'portfolio_id': portfolio_id
+            })
+
+        return [
+            ShortTransaction(
+                transaction_id=int(row[0]),
+                portfolio_id=int(row[1]),
+                ticker=str(row[2]),
+                quantity=int(row[3]),
+                timestamp=self.int_to_datetime(int(row[4]))
+            )
+            for row in self.cursor.fetchall()]

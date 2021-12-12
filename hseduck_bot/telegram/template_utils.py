@@ -16,3 +16,11 @@ def get_text(template_name: str, template_args: Optional[Dict[str, Any]] = None)
 
 def make_bold(text: str):
     return get_text("bold", {'text': text})
+
+
+def wrong_format_message(command: str):
+    try:
+        right_format = get_text("formats.%s" % (command,))
+    except  (OSError, IOError):
+        right_format = "undefined"
+    return get_text('wrong_format', {'correct': right_format})

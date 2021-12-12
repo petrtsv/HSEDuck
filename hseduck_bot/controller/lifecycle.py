@@ -3,7 +3,7 @@ import traceback
 from typing import Optional
 
 from hseduck_bot import config
-from hseduck_bot.controller import users, stocks, portfolios, transactions, fetch, contests
+from hseduck_bot.controller import users, stocks, portfolios, transactions, fetch, contests, short_transactions
 from hseduck_bot.model.storage.base import BaseStorage
 from hseduck_bot.model.storage.postgres import PostgresStorage
 from hseduck_bot.model.storage.sqlite import SQLiteStorage
@@ -31,6 +31,7 @@ async def load():
     portfolios.initialize(storage)
     transactions.initialize(storage)
     contests.initialize(storage)
+    short_transactions.initialize(storage)
     print("Storage loaded")
 
     contests.create_global_competition()
@@ -56,6 +57,7 @@ def update_stocks():
 def update_db():
     try:
         contests.update()
+        short_transactions.update()
     except Exception:
         print("Exception while updating db!")
         print(traceback.format_exc())

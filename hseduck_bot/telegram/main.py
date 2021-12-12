@@ -3,7 +3,7 @@ from telegram.ext import Updater, Dispatcher, CommandHandler
 from hseduck_bot import config
 from hseduck_bot.controller.lifecycle import load, unload
 from hseduck_bot.telegram.commands import buy, help_command, new_contest, stock_list, sell, my_portfolios, \
-    new_portfolio, start, my_contests, join_contest
+    new_portfolio, start, my_contests, join_contest, short
 from hseduck_bot.util import async_idle
 
 
@@ -42,6 +42,9 @@ async def run_bot():
 
         join_contest_handler = CommandHandler('join_contest', join_contest.run)
         dispatcher.add_handler(join_contest_handler)
+
+        short_handler = CommandHandler('short', short.run)
+        dispatcher.add_handler(short_handler)
 
         updater.start_polling()
 

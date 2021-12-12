@@ -1,0 +1,5 @@
+<b>$$$NAME$$$</b>
+Ticker: <code>$$$TICKER$$$</code>
+Quantity: <code>$$$QUANTITY$$$</code>
+Total cost: <code>$$$COST$$$</code>
+Return date: <code>$$$DATE$$$</code>

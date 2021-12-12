@@ -1,0 +1,3 @@
+<code>/short PORTFOLIO_ID TICKER QUANTITY</code>
+Example:
+<code>/short 1 AAPL 10</code>

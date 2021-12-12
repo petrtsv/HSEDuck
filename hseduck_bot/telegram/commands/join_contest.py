@@ -3,11 +3,10 @@ import traceback
 from telegram import Update
 from telegram.ext import CallbackContext
 
+from hseduck_bot.config import GLOBAL_CONTEST_ALIAS
 from hseduck_bot.controller import users, contests
-from hseduck_bot.telegram.template_utils import get_text
+from hseduck_bot.telegram.template_utils import get_text, wrong_format_message
 from hseduck_bot.telegram.views.contest_view import contest_view
-
-GLOBAL_CONTEST_ALIAS = 'global'
 
 
 def run(update: Update, context: CallbackContext):
@@ -16,7 +15,7 @@ def run(update: Update, context: CallbackContext):
 
     if len(args) != 2:
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=get_text('input_validation.invalid_format'),
+                                 text=wrong_format_message('join_contest'),
                                  parse_mode='HTML')
         return
 

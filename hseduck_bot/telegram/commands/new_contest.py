@@ -6,7 +6,7 @@ from telegram import Update
 from telegram.ext import CallbackContext
 
 from hseduck_bot.controller import users, contests
-from hseduck_bot.telegram.template_utils import get_text
+from hseduck_bot.telegram.template_utils import get_text, wrong_format_message
 from hseduck_bot.telegram.views.contest_view import contest_view
 
 NAME_REGEX = re.compile(r'^/\S+\s+(.+?)\s*$')
@@ -18,7 +18,7 @@ def run(update: Update, context: CallbackContext):
     tokens = text.strip().split()
     if '\n' in text or len(tokens) != 3:
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=get_text('input_validation.invalid_format'),
+                                 text=wrong_format_message("new_contest"),
                                  parse_mode='HTML')
         return
     name = tokens[1]

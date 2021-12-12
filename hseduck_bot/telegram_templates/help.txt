@@ -15,3 +15,7 @@
 /my_contests — prints list of all the contests you have joined
 
 /join_contest <code>CONTEST_ID</code> — join contest with specified id
+
+/join_contest global — join default global contest
+
+/short <code>PORTFOLIO_ID</code> <code>TICKER</code> <code>QUANTITY</code> — borrow requested stocks for 24 hours and immediately sell them

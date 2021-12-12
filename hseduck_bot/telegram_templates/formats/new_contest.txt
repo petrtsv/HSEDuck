@@ -1,0 +1,3 @@
+<code>/new_contest NAME (one word only) HOURS (duration)</code>
+Example:
+<code>/new_contest Test 168</code>
