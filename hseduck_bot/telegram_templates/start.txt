@@ -1,4 +1,4 @@
-Hi!
+Hi, $$$NAME$$$!
 
 Using this bot you can collect a virtual investment portfolio. Top 50 stocks from S&P 500 are available.
 
