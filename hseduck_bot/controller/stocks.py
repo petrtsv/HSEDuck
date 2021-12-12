@@ -1,3 +1,4 @@
+import datetime
 import math
 from typing import Optional
 
@@ -23,21 +24,21 @@ def all_stocks():
     return stock_storage.get_stocks()
 
 
-def last_record(ticker: str):
-    return stock_storage.get_last_stock_record(ticker)
+def last_record(ticker: str, timestamp: Optional[datetime.datetime] = None):
+    return stock_storage.get_last_stock_record(ticker, timestamp=timestamp)
 
 
-def price_int(ticker: str):
-    return int(last_record(ticker).price)
+def price_int(ticker: str, timestamp: Optional[datetime.datetime] = None):
+    return int(last_record(ticker, timestamp=timestamp).price)
 
 
-def price_str(ticker: str):
-    record = last_record(ticker)
+def price_str(ticker: str, timestamp: Optional[datetime.datetime] = None):
+    record = last_record(ticker, timestamp=timestamp)
     return record.price_repr if record is not None else "NONE"
 
 
-def price_float(ticker: str):
-    record = last_record(ticker)
+def price_float(ticker: str, timestamp: Optional[datetime.datetime] = None):
+    record = last_record(ticker, timestamp=timestamp)
     return float(record.price_float if record is not None else math.nan)
 
 

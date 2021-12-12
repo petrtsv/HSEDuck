@@ -97,11 +97,18 @@ class AbstractSQLStorage(BaseStorage, StockStorage, UserStorage, PortfolioStorag
         return [StockRecord(ticker=row[0], price=row[1], timestamp=self.int_to_datetime(row[2])) for row in
                 self.cursor.fetchall()]
 
-    def get_last_stock_record(self, ticker: str) -> Union[StockRecord, None]:
+    def get_last_stock_record(self, ticker: str, timestamp: Optional[datetime.datetime] = None) -> \
+            Union[StockRecord, None]:
+        if timestamp is None:
+            timestamp = datetime.datetime.now()
+        int_timestamp: int = self.datetime_to_int(timestamp)
         self.execute_query("SELECT * FROM stock_records WHERE "
-                           "ticker = :ticker "
+                           "ticker = :ticker AND record_timestamp <= :timestamp "
                            "ORDER BY record_timestamp DESC",
-                           {'ticker': ticker})
+                           {
+                               'ticker': ticker,
+                               'timestamp': int_timestamp
+                           })
         result = self.cursor.fetchone()
         return result if result is None else StockRecord(ticker=result[0], price=result[1],
                                                          timestamp=self.int_to_datetime(result[2]))

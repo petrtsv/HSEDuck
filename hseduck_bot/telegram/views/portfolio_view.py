@@ -1,7 +1,9 @@
+import datetime
 from typing import Optional
 
 from hseduck_bot import config
 from hseduck_bot.controller import portfolios, transactions, stocks, contests
+from hseduck_bot.model.contests import Contest
 from hseduck_bot.model.portfolios import Portfolio
 from hseduck_bot.model.stocks import StockInfo
 from hseduck_bot.telegram.commands.utils import money_to_str
@@ -13,8 +15,15 @@ def portfolio_view(portfolio: Portfolio, user_id: Optional[int] = None):
     money = money_to_str(0)
     elements = []
     portfolio_cost = 0
+
+    timestamp = None
+
+    if portfolio.contest_id is not None:
+        contest: Contest = contests.get_by_id(portfolio.contest_id)
+        timestamp = contest.end_date
+
     for ticker in portfolios.get_tickers_for_portfolio(portfolio.id):
-        cost, quantity = transactions.cost_in_portfolio(portfolio.id, ticker, with_quantity=True)
+        cost, quantity = transactions.cost_in_portfolio(portfolio.id, ticker, with_quantity=True, timestamp=timestamp)
         portfolio_cost += cost
 
         if ticker == config.CURRENCY:

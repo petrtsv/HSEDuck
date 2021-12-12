@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 
 from hseduck_bot import config
@@ -19,17 +20,19 @@ def quantity_in_portfolio(portfolio_id: int, ticker: str):
     return int(transaction_storage.get_quantity(portfolio_id, ticker))
 
 
-def cost_in_portfolio(portfolio_id: int, ticker: str, with_quantity: bool = False) -> float:
+def cost_in_portfolio(portfolio_id: int, ticker: str, with_quantity: bool = False,
+                      timestamp: Optional[datetime.datetime] = None) -> float:
     quantity = quantity_in_portfolio(portfolio_id, ticker)
-    price = stocks.price_float(ticker) if ticker != config.CURRENCY else 1. / config.PRICE_PRECISION
+    price = stocks.price_float(ticker,
+                               timestamp=timestamp) if ticker != config.CURRENCY else 1. / config.PRICE_PRECISION
     cost = price * quantity
     return cost if not with_quantity else (cost, quantity)
 
 
-def portfolio_total_cost(portfolio_id: int) -> float:
+def portfolio_total_cost(portfolio_id: int, timestamp: Optional[datetime.datetime] = None) -> float:
     total = 0
     for ticker in portfolios.get_tickers_for_portfolio(portfolio_id):
-        total += cost_in_portfolio(portfolio_id, ticker)
+        total += cost_in_portfolio(portfolio_id, ticker, timestamp=timestamp)
     return total
 
 

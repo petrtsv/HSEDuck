@@ -1,6 +1,6 @@
 import datetime
 from abc import ABC, abstractmethod
-from typing import List, Union
+from typing import List, Union, Optional
 
 from hseduck_bot import config
 
@@ -50,12 +50,8 @@ class StockStorage(ABC):
         pass
 
     @abstractmethod
-    def get_last_stock_record(self, ticker: str) -> Union[StockRecord, None]:
-        """
-        Get last record for given ticker.
-        :param ticker: Ticker to get record for.
-        :return: Last record for given ticker, None if not found
-        """
+    def get_last_stock_record(self, ticker: str, timestamp: Optional[datetime.datetime] = None) -> \
+            Union[StockRecord, None]:
         pass
 
     @abstractmethod

@@ -50,24 +50,21 @@ def join_contest(user_id: int, contest_id: int) -> None:
 
 def get_global_contest_id() -> int:
     if not users.check_existence(config.GLOBAL_CONTEST_OWNER_USERNAME):
-        raise ValueError('Cannot find GLOBAL contest')
+        raise RuntimeError('Cannot find GLOBAL contest')
     global_contest_owner = users.login(config.GLOBAL_CONTEST_OWNER_USERNAME)
     global_contest_owner_contests = list_owned_contests_for_user_id(global_contest_owner.id)
     if len(global_contest_owner_contests) < 1:
-        raise ValueError('Cannot find GLOBAL contest')
+        raise RuntimeError('Cannot find GLOBAL contest')
     global_contest = global_contest_owner_contests[0]
     return global_contest.id
-
-
-def join_global(user_id: int) -> None:
-    join_contest(user_id, global_contest.id)
 
 
 def get_contest_results(contest_id: int) -> List[Tuple[float, User, Portfolio]]:
     participants = contest_storage.get_participants_by_contest_id(contest_id)
     participants_portfolios = [contest_storage.get_contest_portfolio_for_user_id(user_id=user.id, contest_id=contest_id)
                                for user in participants]
-    participants_results = [transactions.portfolio_total_cost(portfolio.id) for portfolio in
+    contest = get_by_id(contest_id)
+    participants_results = [transactions.portfolio_total_cost(portfolio.id, timestamp=contest.end_date) for portfolio in
                             participants_portfolios]
     results = list(zip(participants_results, participants, participants_portfolios))
     results.sort(key=lambda e: (e[0], e[1].username), reverse=True)
@@ -101,6 +98,8 @@ def create_global_competition() -> None:
                                         must_join=False)
         print("Created global contest: name = %s, id = %d, end_date = %s" % (
             global_contest.name, global_contest.id, str(global_contest.end_date)))
+    else:
+        print("Global contest is already created")
 
 
 class InvalidContestStateError(Exception):
